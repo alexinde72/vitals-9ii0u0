@@ -10,6 +10,13 @@ import android.os.Looper;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.util.Log;
+import android.graphics.Bitmap;
+import android.net.http.SslError;
+import android.webkit.ConsoleMessage;
+import android.webkit.SslErrorHandler;
+import android.webkit.WebChromeClient;
+import android.webkit.WebResourceResponse;
 import android.webkit.ValueCallback;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
@@ -43,18 +50,42 @@ public class MainActivity extends Activity {
         s.setMediaPlaybackRequiresUserGesture(true);
         s.setCacheMode(WebSettings.LOAD_DEFAULT);
         s.setUserAgentString(s.getUserAgentString() + " VitalsTV/1.0 Android TV");
+        WebView.setWebContentsDebuggingEnabled(true);
+        web.setWebChromeClient(new WebChromeClient() {
+            @Override
+            public boolean onConsoleMessage(ConsoleMessage m) {
+                Log.w("VitalsWeb", m.messageLevel() + " " + m.message() + " @" + m.sourceId() + ":" + m.lineNumber());
+                return true;
+            }
+        });
         web.setWebViewClient(new WebViewClient() {
+            @Override
+            public void onPageStarted(WebView view, String url, Bitmap favicon) { Log.w("VitalsWeb", "page started " + url); }
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                Log.w("VitalsWeb", "page finished " + url);
+                if (!showingOffline) scheduleWatchdog();
+            }
+            @Override
+            public void onReceivedHttpError(WebView view, WebResourceRequest request, WebResourceResponse r) {
+                Log.w("VitalsWeb", "http " + r.getStatusCode() + " " + request.getUrl());
+            }
+            @Override
+            public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
+                Log.w("VitalsWeb", "ssl error " + error);
+                handler.cancel();
+            }
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
                 return !request.getUrl().toString().startsWith("https://alexinde72.github.io/");
             }
             @Override
             public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
+                Log.w("VitalsWeb", "error " + error.getErrorCode() + " " + error.getDescription() + " " + request.getUrl());
                 if (request.isForMainFrame()) showOffline();
             }
         });
         setContentView(web);
-        hideSystemUi();
         load();
     }
 
@@ -62,6 +93,29 @@ public class MainActivity extends Activity {
         showingOffline = false;
         web.loadUrl(URL);
         web.requestFocus();
+    }
+
+    private int watchdogFails = 0;
+    private final Runnable watchdog = new Runnable() {
+        public void run() {
+            if (showingOffline) return;
+            // window.__frames is bumped by requestAnimationFrame in the page; it must keep growing
+            web.evaluateJavascript("(function(){var a=window.__vf||0;return document.querySelector('.app')&&window.__frames>a?(window.__vf=window.__frames,'ok'):'stuck'})()",
+                new ValueCallback<String>() {
+                    public void onReceiveValue(String v) {
+                        if (v != null && v.contains("ok")) { watchdogFails = 0; scheduleWatchdog(); return; }
+                        watchdogFails++;
+                        Log.w("VitalsWeb", "watchdog: page stuck (" + watchdogFails + "), reloading");
+                        if (watchdogFails > 3) web.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+                        load();
+                    }
+                });
+        }
+    };
+
+    private void scheduleWatchdog() {
+        handler.removeCallbacks(watchdog);
+        handler.postDelayed(watchdog, 10000);
     }
 
     private void showOffline() {
@@ -75,18 +129,6 @@ public class MainActivity extends Activity {
         ConnectivityManager cm = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
         NetworkInfo ni = cm == null ? null : cm.getActiveNetworkInfo();
         return ni != null && ni.isConnected();
-    }
-
-    private void hideSystemUi() {
-        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN
-            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
-    }
-
-    @Override
-    public void onWindowFocusChanged(boolean hasFocus) {
-        super.onWindowFocusChanged(hasFocus);
-        if (hasFocus) hideSystemUi();
     }
 
     @Override
