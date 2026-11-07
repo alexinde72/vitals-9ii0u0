@@ -470,6 +470,7 @@ def sample():
 AI_PROMPT = """You are a sharp, encouraging health coach reading someone's Garmin data.
 Write today's briefing based on the JSON below (last 14 days in detail plus 90-day and 365-day averages).
 Rules: be specific with numbers, compare to their own baselines, no medical diagnoses, no generic advice.
+Write durations like "4h 43m" (never decimal hours). "recovery_pct" is the app's Recovery score (0-100%, from HRV, resting HR and sleep vs baseline); call it Recovery. Keep the body under 70 words.
 Return ONLY JSON: {"headline": "<max 8 words>", "body": "<2-3 sentences>", "tips": ["<short actionable tip>", "<tip>", "<tip>"]}"""
 
 
@@ -497,7 +498,7 @@ def ai_insights(days, activities):
             {k: d.get(k) for k in ("date", "steps", "rhr", "stress", "bbHigh", "intensity")}
             | {"sleep_h": round((g(d, "sleep", "total") or 0) / 3600, 2), "sleep_score": g(d, "sleep", "score"),
                "deep_h": round((g(d, "sleep", "deep") or 0) / 3600, 2), "hrv": g(d, "hrv", "night"),
-               "readiness": g(d, "readiness", "score")}
+               "recovery_pct": g(d, "readiness", "score")}
             for d in days[-14:]
         ],
         "avg90": summ(days[-90:]),
