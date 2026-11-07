@@ -169,6 +169,7 @@ table.cmp td:first-child{color:var(--ink-2);font-weight:600}
 .empty{color:var(--muted);font-size:.85rem;padding:20px 0;text-align:center}
 .loading{display:grid;place-items:center;height:60vh;color:var(--muted)}
 .view{animation:fade .25s ease}
+.view.still{animation:none}
 @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
 
 /* ---------------- TV (10-foot) mode ---------------- */
@@ -377,7 +378,7 @@ body.tv .ask{display:none}
 #chat.open{visibility:visible}
 .chat-dim{position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.6);opacity:0;transition:opacity .25s}
 #chat.open .chat-dim{opacity:1}
-.chat-panel{position:absolute;left:0;right:0;bottom:0;height:86vh;background:#111215;border-radius:22px 22px 0 0;border-top:1px solid var(--line);display:flex;flex-direction:column;transform:translateY(100%);transition:transform .3s cubic-bezier(.2,.8,.2,1)}
+.chat-panel{position:absolute;left:0;right:0;bottom:0;height:86vh;max-height:calc(100% - 10px);background:#111215;border-radius:22px 22px 0 0;border-top:1px solid var(--line);display:flex;flex-direction:column;transform:translateY(100%);transition:transform .3s cubic-bezier(.2,.8,.2,1)}
 #chat.open .chat-panel{transform:none}
 @media (min-width:760px){.chat-panel{left:auto;right:24px;bottom:24px;width:440px;height:72vh;border-radius:22px;border:1px solid var(--line)}}
 .chat-head{display:flex;justify-content:space-between;align-items:center;padding:14px 14px 12px 18px;border-bottom:1px solid var(--grid)}
@@ -1549,11 +1550,11 @@ function renderKeySetup(msg){
   const has = !!getKey();
   $c("#chat-body").innerHTML = `<div class="keybox">
     <p style="margin-top:0"><b>Connect Gemini to ask follow-up questions.</b></p>
-    <p class="sub">Paste a Gemini API key from <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener" style="color:#3ff0a0">aistudio.google.com/apikey</a>. You can use the same key as the daily sync.
-    It's saved <b>only on this device</b> and is never part of the public site. Your question plus a summary of your health data are sent to Google Gemini to answer it.</p>
-    <input id="key-in" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${has ? "Key saved · paste a new one to replace" : "AIza…"}">
+    <input id="key-in" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${has ? "Key saved · paste a new one to replace" : "Paste your Gemini API key"}">
     ${msg ? `<div class="msg err" style="max-width:100%">${esc(msg)}</div>` : ""}
-    <button class="btn" id="key-save">Save key</button>${has ? `<button class="btn ghost" id="key-back">Back to chat</button><button class="btn ghost" id="key-del">Remove key</button>` : ""}
+    ${navigator.clipboard && navigator.clipboard.readText ? `<button class="btn ghost" id="key-paste" style="margin:0 8px 0 0">Paste</button>` : ""}<button class="btn" id="key-save">Save key</button>${has ? `<button class="btn ghost" id="key-back">Back to chat</button><button class="btn ghost" id="key-del">Remove key</button>` : ""}
+    <p class="sub" style="margin-top:16px">Get a key at <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener" style="color:#3ff0a0">aistudio.google.com/apikey</a>. You can use the same key as the daily sync.
+    It's saved <b>only on this device</b> and is never part of the public site. Your question plus a summary of your health data are sent to Google Gemini to answer it.</p>
     <p class="sub" style="margin-top:14px">In mainland China, Gemini needs a VPN on your phone.</p></div>`;
 }
 function openChat(key){
@@ -1561,9 +1562,9 @@ function openChat(key){
   hideTip(); chatKey = key;
   $c("#chat-topic").textContent = ASK[key][0];
   chat.classList.add("open"); document.body.classList.add("chat-open");
-  renderChat();
+  renderChat(); fitChat();
 }
-function closeChat(){ stopVoice(); chat.classList.remove("open"); document.body.classList.remove("chat-open"); $c("#chat-in").blur(); }
+function closeChat(){ stopVoice(); const ae = document.activeElement; if (ae && chat.contains(ae)) ae.blur(); chat.classList.remove("open"); document.body.classList.remove("chat-open"); fitChat(); }
 function chatContext(key){
   const last14 = DAYS.slice(-14).map(d => ({ date: d.date, sleep_min: d.sleep ? Math.round(d.sleep.total / 60) : null, sleep_score: d.sleep ? d.sleep.score : null,
     bedtime: d.sleep && d.sleep.start ? d.sleep.start.slice(11, 16) : null, hrv: d.hrv ? d.hrv.night : null, rhr: d.rhr, steps: d.steps, stress: d.stress,
@@ -1666,6 +1667,7 @@ chat.addEventListener("click", async e => {
   if (t.id === "chat-mic") { toggleVoice(); return; }
   if (t.id === "chat-gear") { renderKeySetup(); return; }
   if (t.id === "key-back") { renderChat(); return; }
+  if (t.id === "key-paste") { try { const v = await navigator.clipboard.readText(); if (v) { $c("#key-in").value = v.trim(); } } catch (er) { $c("#key-in").focus(); } return; }
   if (t.id === "key-del") { try { localStorage.removeItem("vitals.geminiKey"); sessionStorage.removeItem("vitals.models"); } catch (er) {} renderKeySetup(); return; }
   if (t.id === "key-save") {
     const v = ($c("#key-in").value || "").trim();
@@ -1680,11 +1682,17 @@ chat.addEventListener("click", async e => {
 });
 $c("#chat-in").addEventListener("input", growInput);
 $c("#chat-in").addEventListener("keydown", e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendChat(e.target.value); } });
-// keep the panel above the iOS keyboard
-if (window.visualViewport) visualViewport.addEventListener("resize", () => {
-  const off = Math.max(0, innerHeight - visualViewport.height - visualViewport.offsetTop);
-  chat.querySelector(".chat-panel").style.bottom = off + "px";
-});
+// Fit the chat overlay to the *visible* area: when the iOS keyboard opens, the panel shrinks above it
+function fitChat(){
+  const vv = window.visualViewport;
+  if (!vv || !chat.classList.contains("open")) { chat.style.top = ""; chat.style.height = ""; chat.style.bottom = ""; return; }
+  chat.style.top = vv.offsetTop + "px";
+  chat.style.height = vv.height + "px";
+  chat.style.bottom = "auto";
+}
+if (window.visualViewport) { visualViewport.addEventListener("resize", fitChat); visualViewport.addEventListener("scroll", fitChat); }
+chat.addEventListener("focusin", () => setTimeout(fitChat, 50));
+chat.addEventListener("focusout", () => setTimeout(fitChat, 250));
 
 /* ============================================================ render */
 function renderTabs(){
@@ -1702,17 +1710,28 @@ function render(keepFocus){
   if (!DATA) return;
   document.documentElement.style.setProperty("--glow", hexA(readinessColor(TODAY.readiness?.score ?? null), TV ? .16 : .24));
   const v = V[state.view]();
+  const app = $("#app"), sc = TV ? app : null;
+  const keepY = keepFocus ? (sc ? sc.scrollTop : window.pageYOffset) : null;
+  if (keepFocus) app.style.minHeight = app.offsetHeight + "px";   // stop the page collapsing while charts redraw
   const gen = DATA.generated ? new Date(DATA.generated) : null;
   const stale = gen && (Date.now() - gen) > 36 * 36e5;
   $("#app").innerHTML = `<header class="top"><div><div class="brand">Vitals${DATA.profile?.name ? " · " + esc(DATA.profile.name) : ""}</div>
       <h1>${state.view === "today" ? fDay(new Date()) : ""}${state.view !== "today" ? "" : ""}</h1></div>
       <div class="meta">${DATA.source === "sample" ? `<span class="badge warn">Sample data</span><br>` : ""}${stale ? `<span class="badge warn">Sync overdue</span><br>` : ""}Synced ${gen ? relTime(gen) : "–"}<br>${esc(DATA.profile?.device || "")}</div></header>
-    <div class="view">${v.html}</div>`;
+    <div class="view${keepFocus ? " still" : ""}">${v.html}</div>`;
   if (state.view !== "today") $("#app header.top h1").remove();
   const rs = $("#railSync"); if (rs) rs.textContent = "Synced " + (gen ? relTime(gen) : "–");
   const token = ++renderSeq;
   hideTip();
-  requestAnimationFrame(() => { if (token !== renderSeq) return; v.mount(); mountSpheres(); if (TV && !keepFocus) focusFirst(); });
+  const restore = () => { if (keepY == null) return; if (sc) sc.scrollTop = keepY; else window.scrollTo(0, keepY); };
+  restore();
+  requestAnimationFrame(() => {
+    if (token !== renderSeq) return;
+    v.mount(); mountSpheres(); restore();
+    app.style.minHeight = "";
+    restore();
+    if (TV && !keepFocus) focusFirst();
+  });
   renderTabs();
 }
 
@@ -1730,7 +1749,7 @@ document.addEventListener("click", e => {
   else if (b.dataset.vaperiod) { state.vaPeriod = +b.dataset.vaperiod; try { localStorage.setItem("vitals.vaPeriod", state.vaPeriod); } catch (e) {} render(true); restoreFocus(`[data-vaperiod="${b.dataset.vaperiod}"]`); }
 });
 function go(view){ state.view = view; history.replaceState(null, "", "#" + view); window.scrollTo(0, 0); $("#app").scrollTop = 0; render(); }
-function restoreFocus(sel){ if (TV) requestAnimationFrame(() => $(sel)?.focus()); }
+function restoreFocus(sel){ if (TV) requestAnimationFrame(() => { const el = $(sel); if (el) el.focus({preventScroll: true}); }); }
 function saveState(){ try { localStorage.setItem("vitals.range", state.range); } catch(e) {} }
 try { const v = +localStorage.getItem("vitals.vaPeriod"); if ([91, 183, 365].includes(v)) state.vaPeriod = v; } catch (e) {}
 try { const r = +localStorage.getItem("vitals.range"); if ([7,30,90,365].includes(r)) state.range = r; } catch(e) {}
