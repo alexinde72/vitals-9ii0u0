@@ -762,7 +762,14 @@ def main():
     cutoff = iso(dt.date.today() - dt.timedelta(days=HISTORY_DAYS))
     days = [by_date[k] for k in sorted(by_date) if k >= cutoff]
     add_recovery(days)
-    insights = None if args.sample else ai_insights(days, acts, fitness)
+    # Code deploys (push) re-run the sync; reuse today's insights then, so Gemini's daily quota goes to the
+    # morning briefing and the in-app chat instead.
+    prev_ins = prev.get("insights") or {}
+    reuse = (os.getenv("GITHUB_EVENT_NAME") == "push" and prev_ins.get("date") == (days[-1]["date"] if days else None)
+             and not os.getenv("FORCE_AI"))
+    if reuse:
+        print("  AI insights: reusing today's (code deploy)")
+    insights = None if (args.sample or reuse) else ai_insights(days, acts, fitness)
     if insights is None and prev.get("insights"):
         insights = prev["insights"]
     if args.sample:
