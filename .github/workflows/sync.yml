@@ -51,6 +51,12 @@ jobs:
           if [ -z "$GARMIN_PERSONAL_API_KEY" ]; then echo "::error::Add the GARMIN_PERSONAL_API_KEY secret"; exit 1; fi
           if [ -n "$BACKFILL" ]; then python sync/sync.py --backfill "$BACKFILL"; else python sync/sync.py; fi
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Make the app run on older TV browsers
+        run: python sync/legacy_build.py web/index.html
+
       - uses: actions/upload-pages-artifact@v3
         with:
           path: web
