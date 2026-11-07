@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Boot screen: black with the Vitals logo, shown instantly while the WebView starts -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@android:color/black" />
+    <item><bitmap android:gravity="center" android:src="@drawable/splash_logo" /></item>
+</layer-list>

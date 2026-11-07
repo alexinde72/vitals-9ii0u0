@@ -4,58 +4,75 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import javax.imageio.ImageIO;
 
-/** Draws the launcher icon and the Android TV home-screen banner (glowing ring + pulse line). */
+/** Draws the Vitals brand assets for the TV app: launcher icon, home-screen banner and boot-screen logo.
+ *  Geometry matches the web app's SVG (100-unit cap height, split-stroke V). */
 public class Art {
-    static final Color BG = new Color(0x0a0a0b), TRACK = new Color(0x27272b), GREEN = new Color(0x0ca30c), INK = new Color(0xf0efec);
+    static final Color BG = new Color(0x000000), INK = new Color(0xf0efec);
 
     public static void main(String[] a) throws Exception {
         String res = a.length > 0 ? a[0] : "res";
+        new File(res + "/drawable-xxhdpi").mkdirs();
+        new File(res + "/drawable-xhdpi").mkdirs();
         ImageIO.write(icon(192), "png", new File(res + "/drawable-xxhdpi/ic_launcher.png"));
         ImageIO.write(banner(320, 180), "png", new File(res + "/drawable-xhdpi/banner.png"));
+        ImageIO.write(splashLogo(), "png", new File(res + "/drawable-xhdpi/splash_logo.png"));
     }
 
     static Graphics2D g(BufferedImage img) {
         Graphics2D g = img.createGraphics();
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
-        g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+        g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
         return g;
     }
 
-    static void ring(Graphics2D g, double cx, double cy, double r, double w) {
-        g.setStroke(new BasicStroke((float) w, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-        g.setColor(TRACK);
-        g.draw(new Ellipse2D.Double(cx - r, cy - r, 2 * r, 2 * r));
-        for (int i = 6; i >= 1; i--) { // soft glow
-            g.setStroke(new BasicStroke((float) (w + i * 3), BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-            g.setColor(new Color(12, 163, 12, 10));
-            g.draw(new Arc2D.Double(cx - r, cy - r, 2 * r, 2 * r, 90, -252, Arc2D.OPEN));
-        }
-        g.setStroke(new BasicStroke((float) w, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-        g.setColor(GREEN);
-        g.draw(new Arc2D.Double(cx - r, cy - r, 2 * r, 2 * r, 90, -252, Arc2D.OPEN));
+    static Path2D poly(double... xy) {
+        Path2D p = new Path2D.Double();
+        p.moveTo(xy[0], xy[1]);
+        for (int i = 2; i < xy.length; i += 2) p.lineTo(xy[i], xy[i + 1]);
+        p.closePath();
+        return p;
     }
 
-    static void pulse(Graphics2D g, double cx, double cy, double s, double w) {
-        Path2D p = new Path2D.Double();
-        p.moveTo(cx - 1.06 * s, cy + 0.04 * s);
-        p.lineTo(cx - 0.55 * s, cy + 0.04 * s);
-        p.lineTo(cx - 0.29 * s, cy - 0.56 * s);
-        p.lineTo(cx + 0.17 * s, cy + 0.66 * s);
-        p.lineTo(cx + 0.43 * s, cy + 0.04 * s);
-        p.lineTo(cx + 1.04 * s, cy + 0.04 * s);
-        g.setStroke(new BasicStroke((float) w, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-        g.setColor(INK);
-        g.draw(p);
+    /** Split V: two slashes that don't meet (100-unit tall, 66 wide). */
+    static void glyphV(Graphics2D g) { g.fill(poly(0, 0, 10, 0, 31, 100, 21, 100)); g.fill(poly(56, 0, 66, 0, 45, 100, 35, 100)); }
+    static void glyphA(Graphics2D g) { g.fill(poly(21, 0, 31, 0, 10, 100, 0, 100)); g.fill(poly(35, 0, 45, 0, 66, 100, 56, 100)); }
+
+    /** VITALS wordmark in a 400 x 100 box at the current transform. */
+    static void wordmark(Graphics2D g) {
+        AffineTransform t0 = g.getTransform();
+        glyphV(g);
+        g.translate(88, 0); g.fill(new Rectangle2D.Double(0, 0, 9.6, 100));
+        g.setTransform(t0); g.translate(119.5, 0); g.fill(poly(0, 0, 56, 0, 56, 9.6, 32.8, 9.6, 32.8, 100, 23.2, 100, 23.2, 9.6, 0, 9.6));
+        g.setTransform(t0); g.translate(192, 0); glyphA(g);
+        g.setTransform(t0); g.translate(281.5, 0); g.fill(poly(0, 0, 9.6, 0, 9.6, 90.4, 48, 90.4, 48, 100, 0, 100));
+        g.setTransform(t0); g.translate(347.5, 0);
+        Path2D s = new Path2D.Double();
+        s.moveTo(51, 15);
+        s.curveTo(45.5, 8, 37, 4.8, 27, 4.8);
+        s.curveTo(13.5, 4.8, 4.8, 12.5, 4.8, 24.5);
+        s.curveTo(4.8, 52, 47.2, 46, 47.2, 75);
+        s.curveTo(47.2, 87.5, 38.5, 95.2, 25, 95.2);
+        s.curveTo(14.5, 95.2, 6, 90.5, 1, 82);
+        g.setStroke(new BasicStroke(9.6f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER));
+        g.draw(s);
+        g.setTransform(t0);
+    }
+
+    /** Ring + split V in a 100 x 100 box at the current transform. */
+    static void mark(Graphics2D g, double ringR, double ringW) {
+        AffineTransform t0 = g.getTransform();
+        g.setStroke(new BasicStroke((float) ringW));
+        g.draw(new Ellipse2D.Double(50 - ringR, 50 - ringR, ringR * 2, ringR * 2));
+        g.translate(36.8, 31); g.scale(0.4, 0.4); glyphV(g);
+        g.setTransform(t0);
     }
 
     static BufferedImage icon(int n) {
         BufferedImage img = new BufferedImage(n, n, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = g(img);
-        g.setColor(BG);
-        g.fill(new RoundRectangle2D.Double(0, 0, n, n, n * 0.22, n * 0.22));
-        ring(g, n / 2.0, n / 2.0, n * 0.30, n * 0.065);
-        pulse(g, n / 2.0, n / 2.0, n * 0.20, n * 0.05);
+        g.setColor(BG); g.fill(new RoundRectangle2D.Double(0, 0, n, n, n * 0.22, n * 0.22));
+        g.setColor(INK); g.scale(n / 100.0, n / 100.0); mark(g, 33, 4.4);
         g.dispose();
         return img;
     }
@@ -63,23 +80,30 @@ public class Art {
     static BufferedImage banner(int w, int h) {
         BufferedImage img = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = g(img);
-        g.setColor(BG);
-        g.fillRect(0, 0, w, h);
-        g.setPaint(new RadialGradientPaint(new Point2D.Double(w * 0.25, -h * 0.2), w * 0.9f,
-            new float[]{0f, 1f}, new Color[]{new Color(12, 163, 12, 45), new Color(10, 10, 11, 0)}));
-        g.fillRect(0, 0, w, h);
-        ring(g, h * 0.5, h * 0.5, h * 0.30, h * 0.06);
-        pulse(g, h * 0.5, h * 0.5, h * 0.20, h * 0.045);
+        g.setColor(BG); g.fillRect(0, 0, w, h);
         g.setColor(INK);
-        g.setFont(new Font("SansSerif", Font.BOLD, (int) (h * 0.19)));
-        FontMetrics fm = g.getFontMetrics();
-        String t = "VITALS";
-        int x = (int) (h * 0.95);
-        // manual letter spacing
-        for (char c : t.toCharArray()) { g.drawString(String.valueOf(c), x, (int) (h * 0.555)); x += fm.charWidth(c) + (int) (h * 0.022); }
-        g.setColor(new Color(0x898781));
-        g.setFont(new Font("SansSerif", Font.PLAIN, (int) (h * 0.09)));
-        g.drawString("Health & training", (int) (h * 0.97), (int) (h * 0.72));
+        AffineTransform t0 = g.getTransform();
+        double ms = h * 0.5 / 100.0;                        // mark: half the banner height
+        g.translate(h * 0.2, (h - 100 * ms) / 2); g.scale(ms, ms); mark(g, 44, 5);
+        g.setTransform(t0);
+        double ws = h * 0.15 / 100.0;                       // wordmark cap height 15% of banner
+        g.translate(h * 0.2 + 100 * ms + h * 0.15, (h - 100 * ws) / 2); g.scale(ws, ws); wordmark(g);
+        g.dispose();
+        return img;
+    }
+
+    /** Boot-screen logo (mark above wordmark), shown by the window background while the WebView starts. */
+    static BufferedImage splashLogo() {
+        int w = 360, h = 300;
+        BufferedImage img = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = g(img);
+        g.setColor(INK);
+        AffineTransform t0 = g.getTransform();
+        double ms = 1.5;
+        g.translate((w - 100 * ms) / 2, 10); g.scale(ms, ms); mark(g, 44, 5);
+        g.setTransform(t0);
+        double ws = 0.42;
+        g.translate((w - 400 * ws) / 2, 10 + 100 * ms + 50); g.scale(ws, ws); wordmark(g);
         g.dispose();
         return img;
     }

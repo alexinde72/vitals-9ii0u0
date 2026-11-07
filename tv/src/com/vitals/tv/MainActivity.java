@@ -41,7 +41,7 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         web = new WebView(this);
-        web.setBackgroundColor(Color.BLACK);
+        web.setBackgroundColor(Color.TRANSPARENT);
         web.setFocusable(true);
         web.setFocusableInTouchMode(true);
         WebSettings s = web.getSettings();
@@ -64,6 +64,7 @@ public class MainActivity extends Activity {
             @Override
             public void onPageFinished(WebView view, String url) {
                 Log.w("VitalsWeb", "page finished " + url);
+                view.setBackgroundColor(Color.BLACK);
                 if (!showingOffline) scheduleWatchdog();
             }
             @Override
