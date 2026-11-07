@@ -136,7 +136,8 @@ nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:20;display:flex;justify-
 
 /* activities */
 .acts{display:grid;gap:8px}
-.act{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;background:var(--surface-2);border-radius:14px;padding:12px;outline:none;text-align:left;width:100%}
+.act{display:block;background:var(--surface-2);border-radius:14px;padding:12px;outline:none;text-align:left;width:100%}
+.act-g{display:grid;grid-template-columns:auto 1fr auto;grid-gap:12px;align-items:center}
 .act .ty{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;font-size:.6rem;font-weight:900;letter-spacing:.06em;color:#0a0a0b}
 .act .nm{font-weight:800;font-size:.92rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .act .dt{font-size:.74rem;color:var(--muted)}
@@ -705,7 +706,7 @@ function aggregate(days, fns){
 function actRow(a, i){
   const info = actInfo(a.type), st = new Date(a.start), pace = fPace(a.avgSpeed, a.type);
   const zoneCols = ["#5c5c63","#3987e5","#199e70","#c98500","#d03b3b"], zt = (a.zones||[]).reduce((s,x)=>s+x,0);
-  return `<button class="act ${state.openAct===a.id?"open":""}" data-act="${a.id}">
+  return `<button class="act ${state.openAct===a.id?"open":""}" data-act="${a.id}"><div class="act-g">
     <div class="ty" style="background:${info.c}">${info.l}</div>
     <div style="min-width:0"><div class="nm">${esc(a.name || info.l)}</div><div class="dt">${fDay(st)} · ${fClock(st)}</div></div>
     <div class="nums">
@@ -724,7 +725,7 @@ function actRow(a, i){
       </div>
       ${zt ? `<div class="sub" style="margin-top:12px">Time in heart rate zones</div><div class="zones">${a.zones.map((z,k)=>z?`<i style="flex:${z};background:${zoneCols[k]}"></i>`:"").join("")}</div>
       <div class="legend">${a.zones.map((z,k)=>`<span><i style="background:${zoneCols[k]}"></i>Z${k+1} ${fDur(z)}</span>`).join("")}</div>` : ""}
-    </div></button>`;
+    </div></div></button>`;
 }
 
 /* ============================================================ views */
