@@ -1,0 +1,6 @@
+web/data.json
+garmin_tokens_secret.txt
+.garmintokens/
+__pycache__/
+.DS_Store
+.tools/
