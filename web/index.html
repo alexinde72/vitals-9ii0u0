@@ -283,6 +283,16 @@ body.tv .rail-extra .clock{font-size:3rem;font-weight:700}
 .seg button{flex:none;white-space:nowrap}
 .chart svg{touch-action:pan-y}
 
+/* ---------- stacked cards & wide Vitals Age ---------- */
+.stack{display:flex;flex-direction:column;min-width:0}
+.stack>.card{flex:1 1 auto}
+.stack>.card+.card{margin-top:12px}
+body.tv .stack>.card+.card{margin-top:1.1rem}
+@media (min-width:760px){.va-wide .va-body{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);grid-gap:28px;align-items:center}}
+body.tv .va-wide .va-body{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);grid-gap:2.4rem;align-items:center}
+body.tv .va-wide .va-orb{max-width:27rem}
+body.tv .va-orb{max-width:22rem}
+
 /* ---------- AI insight cards ---------- */
 .ai-mini{display:flex;gap:14px;align-items:flex-start;background:linear-gradient(135deg,rgba(144,133,233,.13),rgba(25,158,112,.07) 55%,rgba(255,255,255,.02))}
 .ai-mark{flex:none;width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-family:var(--cond);font-weight:800;font-size:.85rem;letter-spacing:.06em;color:#0a0a0b;background:linear-gradient(135deg,#9085e9,#3ff0a0)}
@@ -358,6 +368,50 @@ body.tv .sheet{scrollbar-width:none}
 body.tv .sheet::-webkit-scrollbar{display:none}
 body.tv .back:focus{box-shadow:0 0 0 3px var(--ink)}
 body.tv .hero-stats{grid-template-columns:repeat(8,1fr)}
+
+/* ---------- Ask Vitals AI (phone / desktop only) ---------- */
+.ask{flex:none;display:inline-flex;align-items:center;padding:5px 10px 5px 8px;border-radius:99px;background:rgba(255,255,255,.08);border:1px solid var(--line);font-family:var(--cond);font-weight:700;letter-spacing:.06em;font-size:.78rem;color:var(--ink);text-transform:uppercase;line-height:1}
+.ask svg{width:14px;height:14px;fill:#3ff0a0;margin-right:5px}
+body.tv .ask{display:none}
+#chat{position:fixed;top:0;left:0;right:0;bottom:0;z-index:60;visibility:hidden}
+#chat.open{visibility:visible}
+.chat-dim{position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.6);opacity:0;transition:opacity .25s}
+#chat.open .chat-dim{opacity:1}
+.chat-panel{position:absolute;left:0;right:0;bottom:0;height:86vh;background:#111215;border-radius:22px 22px 0 0;border-top:1px solid var(--line);display:flex;flex-direction:column;transform:translateY(100%);transition:transform .3s cubic-bezier(.2,.8,.2,1)}
+#chat.open .chat-panel{transform:none}
+@media (min-width:760px){.chat-panel{left:auto;right:24px;bottom:24px;width:440px;height:72vh;border-radius:22px;border:1px solid var(--line)}}
+.chat-head{display:flex;justify-content:space-between;align-items:center;padding:14px 14px 12px 18px;border-bottom:1px solid var(--grid)}
+.chat-title{font-family:var(--cond);font-weight:800;letter-spacing:.16em;font-size:.95rem;display:flex;align-items:center}
+.chat-title svg{width:16px;height:16px;fill:#3ff0a0;margin-right:7px}
+.chat-ico{width:36px;height:36px;border-radius:50%;background:var(--surface-2);margin-left:8px;display:inline-grid;place-items:center}
+.chat-ico svg{width:17px;height:17px;stroke:var(--ink);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.chat-body{flex:1;overflow-y:auto;padding:16px;-webkit-overflow-scrolling:touch}
+.msg{max-width:88%;padding:10px 13px;border-radius:16px;margin:0 0 10px;font-size:.93rem;line-height:1.42;word-wrap:break-word}
+.msg.user{margin-left:auto;background:#2b2c34;border-bottom-right-radius:6px}
+.msg.model{background:linear-gradient(135deg,rgba(144,133,233,.15),rgba(25,158,112,.08));border:1px solid var(--line);border-bottom-left-radius:6px}
+.msg.ctx{max-width:100%;border:1px dashed var(--axis);color:var(--ink-2);font-size:.84rem}
+.msg.ctx b{display:block;color:var(--ink);font-family:var(--cond);font-size:1rem;letter-spacing:.02em;text-transform:uppercase;margin-bottom:3px}
+.msg.err{border:1px solid rgba(208,59,59,.5);background:rgba(208,59,59,.08)}
+.msg p{margin:0 0 7px}.msg p:last-child{margin:0}
+.msg ul,.msg ol{margin:2px 0 7px;padding-left:20px}.msg li{margin:2px 0}
+.chips{display:flex;flex-wrap:wrap;margin-top:4px}
+.chip{padding:8px 12px;border-radius:99px;background:var(--surface-2);border:1px solid var(--line);font-size:.84rem;margin:0 8px 8px 0;text-align:left}
+.typing{display:inline-flex;align-items:center;height:18px}
+.typing i{display:block;width:7px;height:7px;border-radius:50%;background:var(--ink-2);margin-right:5px;animation:tdot 1s infinite ease-in-out}
+.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
+@keyframes tdot{0%,80%,100%{opacity:.25;transform:translateY(0)}40%{opacity:1;transform:translateY(-3px)}}
+.chat-foot{display:flex;align-items:flex-end;padding:10px 12px calc(env(safe-area-inset-bottom) + 10px);border-top:1px solid var(--grid)}
+.chat-foot textarea{flex:1;min-width:0;resize:none;background:var(--surface-2);border:1px solid var(--line);border-radius:20px;color:var(--ink);font:inherit;font-size:16px;line-height:1.35;padding:10px 14px;max-height:130px;outline:none}
+.chat-mic,.chat-send{flex:none;width:42px;height:42px;border-radius:50%;margin-left:8px;display:grid;place-items:center;background:var(--surface-2)}
+.chat-mic svg,.chat-send svg{width:20px;height:20px;fill:none;stroke:var(--ink);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.chat-send{background:var(--ink)}.chat-send svg{stroke:#000}
+.chat-send:disabled{opacity:.35}
+.chat-mic.on{background:#d03b3b;animation:micpulse 1.2s infinite}
+@keyframes micpulse{0%{box-shadow:0 0 0 0 rgba(208,59,59,.6)}100%{box-shadow:0 0 0 14px rgba(208,59,59,0)}}
+.keybox input{width:100%;background:var(--surface-2);border:1px solid var(--line);border-radius:12px;color:var(--ink);font:inherit;font-size:16px;padding:12px 14px;margin:10px 0;outline:none}
+.btn{display:inline-block;padding:11px 18px;border-radius:12px;background:var(--ink);color:#000;font-weight:700}
+.btn.ghost{background:var(--surface-2);color:var(--ink);margin-left:8px}
+body.chat-open{overflow:hidden}
 </style>
 </head>
 <body>
@@ -842,7 +896,7 @@ V.today = () => {
       </div>
     </section>
     <section class="card tv-7 ai" tabindex="0">
-      <div class="kicker"><h2><span class="dot" style="background:${C.ink}"></span>Daily briefing</h2><span class="sub">${AI?.generated ? "AI · " + fClock(new Date(AI.generated)) : ""}</span></div>
+      <div class="kicker"><h2><span class="dot" style="background:${C.ink}"></span>Daily briefing</h2><span class="row" style="gap:10px"><span class="sub">${AI?.generated ? "AI · " + fClock(new Date(AI.generated)) : ""}</span>${ai ? askBtn("today") : ""}</span></div>
       ${ai ? `<h3>${esc(ai.headline)}</h3><p>${esc(ai.body)}</p><ul class="tips">${(ai.tips||[]).slice(0,3).map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`
            : `<p class="sub">Add a Gemini or Anthropic API key to the sync job to get a written daily briefing. Rule-based insights are below.</p>`}
     </section>
@@ -859,7 +913,7 @@ V.today = () => {
       <div class="chart" id="c-bb"></div>
     </section>
     <section class="card tv-4" tabindex="0">
-      <div class="kicker"><h2>Insights</h2><span class="sub">vs your baselines</span></div>
+      <div class="kicker"><h2>Insights</h2>${CHAT_OK ? askBtn("insights") : `<span class="sub">vs your baselines</span>`}</div>
       <div class="ins">${insightHTML(rules.slice(0, TV ? 4 : 6)) || `<div class="empty">Not enough history yet</div>`}</div>
     </section>
     ${lastAct ? card("tv-6", "Latest activity", actInfo(lastAct.type).c, `<span class="sub">${relTime(new Date(lastAct.start))}</span>`, `<div class="acts">${actRow(lastAct)}</div>`) : ""}
@@ -924,22 +978,24 @@ V.sleep = () => {
       <div class="stagelist">${st.map(x=>`<div><em><span class="dot" style="background:${x[2]}"></span>${x[0]}</em><b>${fDur(x[1])}</b>${tot?Math.round(x[1]/tot*100):0}%</div>`).join("")}</div>
       ${sl.feedback ? `<div class="sub" style="margin-top:14px">Garmin: ${esc(humanize(sl.feedback))}${sl.insight ? " · " + esc(humanize(sl.insight)) : ""}</div>` : ""}
       ${(DATA.today?.hrvNight || []).length ? `<div class="kicker" style="margin:16px 0 6px"><h2><span class="dot" style="background:${C.hrv}"></span>Overnight HRV</h2><span class="sub">5-min readings</span></div><div class="chart" id="c-hyp"></div>` : ""}` : `<div class="empty">No sleep recorded last night</div>`)}
-    ${card("tv-5", "Night vitals", C.ink2, "", sl ? `<div class="stats">
+    <div class="stack tv-5">
+    ${card("", "Night vitals", C.ink2, "", sl ? `<div class="stats">
       <div class="stat"><div class="l">Body Battery</div><div class="v">+${sl.bbChange ?? "–"}</div></div>
       <div class="stat"><div class="l">Sleep stress</div><div class="v">${sl.stress ?? "–"}</div></div>
       <div class="stat"><div class="l">Respiration</div><div class="v">${sl.resp ?? "–"}<small>brpm</small></div></div>
       <div class="stat"><div class="l">Sleeping HR</div><div class="v">${sl.avgHr ?? "–"}<small>bpm</small></div></div>
       <div class="stat"><div class="l">Overnight HRV</div><div class="v">${TODAY.hrv?.night ?? "–"}<small>ms</small></div></div>
       <div class="stat"><div class="l">Sleep need</div><div class="v">${sl.need ? fDur(sl.need) : "–"}</div></div></div>` : "")}
-    ${card("tv-8 span-2", "Duration & stages", C.sleep, `<span class="sub">${state.range > 90 ? "weekly avg" : "nightly"}</span>`, `<div class="chart" id="c-dur"></div>
-      <div class="legend"><span><i style="background:${C.deep}"></i>Deep</span><span><i style="background:${C.light}"></i>Light</span><span><i style="background:${C.rem}"></i>REM</span><span><i style="background:${C.awake}"></i>Awake</span></div>`)}
-    ${card("tv-4", `${state.range === 365 ? "Year" : state.range + "-day"} summary`, C.ink2, "", `<div class="stats">
+    ${card("", `${state.range === 365 ? "Year" : state.range + "-day"} summary`, C.ink2, "", `<div class="stats">
       <div class="stat"><div class="l">Avg duration</div><div class="v">${fDur(avgDur)}</div></div>
       <div class="stat"><div class="l">Avg score</div><div class="v">${avgScore ? avgScore.toFixed(0) : "–"}</div></div>
       <div class="stat"><div class="l">Deep sleep</div><div class="v">${deepPct ? deepPct.toFixed(0) : "–"}<small>%</small></div></div>
       <div class="stat"><div class="l">Bedtime spread</div><div class="v">±${bedSd ? Math.round(bedSd) : "–"}<small>min</small></div></div>
       <div class="stat"><div class="l">Nights ≥ 7h</div><div class="v">${days.filter(d=>d.sleep && d.sleep.total>=7*3600).length}<small>/ ${days.filter(d=>d.sleep).length}</small></div></div>
       <div class="stat"><div class="l">Best score</div><div class="v">${Math.max(0,...days.map(M.sleepScore).filter(v=>v!=null)) || "–"}</div></div></div>`)}
+    </div>
+    ${card("tv-12 span-3", "Duration & stages", C.sleep, `<span class="sub">${state.range > 90 ? "weekly avg" : "nightly"}</span>`, `<div class="chart" id="c-dur"></div>
+      <div class="legend"><span><i style="background:${C.deep}"></i>Deep</span><span><i style="background:${C.light}"></i>Light</span><span><i style="background:${C.rem}"></i>REM</span><span><i style="background:${C.awake}"></i>Awake</span></div>`)}
     ${card("tv-6", "Sleep score", C.sleep, "", `<div class="chart" id="c-score"></div><div class="legend"><span><i class="ln" style="background:${C.sleep}"></i>7-day average</span><span><i style="background:${C.sleep};opacity:.5;border-radius:50%"></i>Nightly</span></div>`)}
     ${card("tv-6", "Schedule", C.ink2, `<span class="sub">bed & wake times</span>`, `<div class="chart" id="c-sched"></div><div class="legend"><span><i style="background:${C.sleep};border-radius:50%"></i>Bedtime</span><span><i style="background:${C.battery};border-radius:50%"></i>Wake time</span></div>`)}
   </div>`;
@@ -977,10 +1033,10 @@ V.heart = () => {
     ${card("tv-6", "Heart rate variability", C.hrv, `<span class="sub">${esc((t.hrv?.status||"").toLowerCase())}</span>`, `
       <div class="between" style="margin-bottom:6px"><div class="mid">${t.hrv?.night ?? "–"}<small>ms last night</small></div>${deltaHTML(t.hrv?.night, base(M.hrv), {unit:" ms"})}</div>
       <div class="chart" id="c-hrv"></div><div class="legend"><span><i class="ln" style="background:${C.hrv}"></i>7-day average</span><span><i style="background:${C.hrv};opacity:.5;border-radius:50%"></i>Nightly</span><span><i style="background:${C.ink};opacity:.18"></i>Balanced range</span></div>`)}
-    ${card("tv-8 span-2", "Heart rate today", C.heart, `<span class="sub">min ${t.minHr ?? "–"} · max ${t.maxHr ?? "–"}</span>`, `<div class="chart" id="c-hr2"></div>`)}
-    ${vo2.length ? card("tv-4", "VO₂ max", C.vo2, `<span class="sub">ml/kg/min</span>`, `<div class="between"><div class="big">${vNow ?? "–"}</div>${vo2.length > 30 ? deltaHTML(vNow, vo2[Math.max(0, vo2.length-91)], {digits:1}).replace("vs 30d","vs 90d") : ""}</div><div class="chart" id="c-vo2" style="margin-top:8px"></div>`) : vitalsAgeCard("tv-4", false)}
+    ${card("tv-12 span-3", "Heart rate today", C.heart, `<span class="sub">min ${t.minHr ?? "–"} · max ${t.maxHr ?? "–"}</span>`, `<div class="chart" id="c-hr2"></div>`)}
     ${card("tv-6", "Stress", C.stress, `<span class="sub">daily average</span>`, `<div class="chart" id="c-stress"></div>`)}
     ${card("tv-6", "Body Battery range", C.battery, `<span class="sub">daily low → high</span>`, `<div class="chart" id="c-bbr"></div>`)}
+    ${vo2.length ? card("tv-12 span-3", "VO₂ max", C.vo2, `<span class="sub">ml/kg/min</span>`, `<div class="between"><div class="big">${vNow ?? "–"}</div>${vo2.length > 30 ? deltaHTML(vNow, vo2[Math.max(0, vo2.length-91)], {digits:1}).replace("vs 30d","vs 90d") : ""}</div><div class="chart" id="c-vo2" style="margin-top:8px"></div>`) : vitalsAgeCard("tv-12 span-3 va-wide", false)}
   </div>`;
   const mount = () => {
     const xs = days.map(d => pd(d.date));
@@ -992,7 +1048,7 @@ V.heart = () => {
       series:[{ys:hrv,color:C.hrv,dots:true,dotsOnly:true},{ys:h7,color:C.hrv,w:2.2}], endLabel:{series:1},
       tip: i => `<b>${fDay(xs[i])}</b>${tipRow(C.hrv,"Nightly",(hrv[i]??"–")+" ms")}${tipRow(C.hrv,"7-day avg",h7[i]?.toFixed(0)??"–")}${days[i].hrv?.low?tipRow(C.ink2,"Balanced",days[i].hrv.low+"–"+days[i].hrv.high):""}` });
     const hr = DATA.today?.hr || [];
-    lineChart($("#c-hr2"), { kind:"minute", xs: hr.map(p=>p[0]), xMin:0, xMax:1440, h:190, series:[{ys:hr.map(p=>p[1]),color:C.heart,w:1.6,area:true}],
+    lineChart($("#c-hr2"), { kind:"minute", xs: hr.map(p=>p[0]), xMin:0, xMax:1440, h: TV ? 230 : 190, series:[{ys:hr.map(p=>p[1]),color:C.heart,w:1.6,area:true}],
       ref: t.rhr ? {y:t.rhr,label:`resting ${t.rhr}`} : null, tip: i => `<b>${minClock(hr[i][0])}</b>${tipRow(C.heart,"Heart rate",hr[i][1]+" bpm")}` });
     const vd = lastN(Math.max(state.range, 90)), vx = vd.map(d=>pd(d.date)), vy = vd.map(M.vo2);
     if ($("#c-vo2")) lineChart($("#c-vo2"), { xs: vx, h:130, series:[{ys:vy,color:C.vo2,w:2.2}], endLabel:{series:0}, tip: i => `<b>${fDay(vx[i])}</b>${tipRow(C.vo2,"VO₂ max",vy[i]??"–")}` });
@@ -1031,8 +1087,8 @@ V.activity = () => {
       <div class="stat"><div class="l">Calories</div><div class="v">${fNum(inRange.reduce((s,a)=>s+(a.kcal||0),0))}</div></div></div>
       ${typeRows.map(([k,v]) => `<div style="margin:8px 0"><div class="between" style="font-size:.8rem;margin-bottom:5px"><span>${k}</span><span class="sub">${fDur(v)}</span></div><div class="bar"><i style="width:${v/typeMax*100}%;background:${GROUP_COLOR[k]}"></i></div></div>`).join("") || `<div class="empty">No workouts in range</div>`}`)}
     ${loadCard()}
-    ${card("tv-6", "Weekly training load", C.stress, `<span class="sub">last 12 weeks</span>`, `<div class="chart" id="c-load"></div>`)}
-    ${card("tv-6", "Intensity minutes", C.hrv, `<span class="sub">weekly · goal 150</span>`, `<div class="chart" id="c-int"></div>`)}
+    ${card("tv-4", "Weekly training load", C.stress, `<span class="sub">last 12 weeks</span>`, `<div class="chart" id="c-load"></div>`)}
+    ${card("tv-4", "Intensity minutes", C.hrv, `<span class="sub">weekly · goal 150</span>`, `<div class="chart" id="c-int"></div>`)}
     ${card("tv-12 span-3", "Recent activities", C.ink2, `<span class="sub">${acts.length} synced</span>`, `<div class="acts" id="acts">${acts.slice(0, TV ? 8 : 20).map(actRow).join("")}</div>`)}
   </div>`;
   const mount = () => {
@@ -1081,10 +1137,10 @@ V.trends = () => {
   <div class="toolbar"><h2>Trends</h2><span class="sub">past 12 months</span></div>
   <div class="grid">
     ${aiBlock("trends")}
-    ${vitalsAgeCard("tv-5", true)}
-    ${card("tv-7 span-2", "Last 30 days vs previous 30", C.ink2, "", `<table class="cmp"><thead><tr><th></th><th>Now</th><th>Before</th><th>Change</th></tr></thead><tbody>
+    ${vitalsAgeCard("tv-12 span-3 va-wide", true)}
+    ${card("tv-5", "Last 30 days vs previous 30", C.ink2, "", `<table class="cmp"><thead><tr><th></th><th>Now</th><th>Before</th><th>Change</th></tr></thead><tbody>
       ${rows.map(([l, fn, f, b]) => `<tr><td>${l}</td><td>${cell(fn, now, f)}</td><td style="color:var(--muted)">${cell(fn, prev, f)}</td><td>${chg(fn, b)}</td></tr>`).join("")}</tbody></table>`)}
-    ${card("tv-12 span-3", "Monthly averages", C.ink2, `<div class="seg" id="mseg">${[["sleep","Sleep"],["hrv","HRV"],["rhr","RHR"],["steps","Steps"],["vo2","VO₂"],["ready","Recovery"]].filter(([k]) => k !== "vo2" || HIST.some(d => d.vo2 != null)).map(([k,l])=>`<button data-month="${k}" class="${(state.month||"sleep")===k?"on":""}">${l}</button>`).join("")}</div>`, `<div class="chart" id="c-month"></div>`)}
+    ${card("tv-7 span-2", "Monthly averages", C.ink2, `<div class="seg" id="mseg">${[["sleep","Sleep"],["hrv","HRV"],["rhr","RHR"],["steps","Steps"],["vo2","VO₂"],["ready","Recovery"]].filter(([k]) => k !== "vo2" || HIST.some(d => d.vo2 != null)).map(([k,l])=>`<button data-month="${k}" class="${(state.month||"sleep")===k?"on":""}">${l}</button>`).join("")}</div>`, `<div class="chart" id="c-month"></div>`)}
     ${card("tv-12 span-3", "Year at a glance", C.ink2, `<div class="seg">${Object.entries(heatOpts).map(([k,v])=>`<button data-heat="${k}" class="${state.heat===k?"on":""}">${v[0]}</button>`).join("")}</div>`, `<div class="heat" id="c-heat"></div>`)}
     ${card("tv-12 span-3", "Personal bests · 12 months", C.ink2, "", `<div class="records">
       ${bSteps ? rec("Most steps", fNum(bSteps.steps), fDay(pd(bSteps.date))) : ""}
@@ -1101,7 +1157,7 @@ V.trends = () => {
       steps:[M.steps, C.steps, v=>fNum(v), v=>v>=1000?(v/1000)+"k":v], vo2:[M.vo2, C.vo2, v=>v.toFixed(1), v=>v], ready:[M.ready, C.good, v=>v.toFixed(0)+"%", v=>v+"%"]}[mk];
     const months = []; yr.forEach(d => { const dt = pd(d.date), key = dt.getFullYear()*12 + dt.getMonth(); let m = months[months.length-1]; if (!m || m.key !== key) months.push(m = {key, d:new Date(dt.getFullYear(), dt.getMonth(), 1), items:[]}); m.items.push(d); });
     const ys = months.map(m => mean(m.items.map(def[0])));
-    lineChart($("#c-month"), { xs: months.map(m=>m.d), h:200, series:[{ys, color:def[1], w:2.4, dots:true, opacity:1, r:3.2}], yFmt: def[3], endLabel:{series:0},
+    lineChart($("#c-month"), { xs: months.map(m=>m.d), h: TV ? 300 : 200, series:[{ys, color:def[1], w:2.4, dots:true, opacity:1, r:3.2}], yFmt: def[3], endLabel:{series:0},
       tip: i => `<b>${MON[months[i].d.getMonth()]} ${months[i].d.getFullYear()}</b>${tipRow(def[1],"Average",ys[i]==null?"–":def[2](ys[i]))}` });
     heatmap($("#c-heat"), ho[1], ho[2], ho[3]);
   };
@@ -1113,7 +1169,7 @@ V.trends = () => {
 function aiBlock(key){
   const ai = DATA.insights && DATA.insights[key];
   if (!ai || !ai.text) return "";
-  return `<section class="card ai-mini span-3 tv-12" tabindex="0"><div class="ai-mark">AI</div><div><h3>${esc(ai.title || "")}</h3><p>${esc(ai.text)}</p></div></section>`;
+  return `<section class="card ai-mini span-3 tv-12" tabindex="0"><div class="ai-mark">AI</div><div style="flex:1;min-width:0"><div class="between" style="align-items:flex-start"><h3>${esc(ai.title || "")}</h3>${askBtn(key)}</div><p>${esc(ai.text)}</p></div></section>`;
 }
 
 /* ============================================================ training load analysis */
@@ -1122,7 +1178,7 @@ function loadCard(){
   const acwr = t.acwr, zone = acwr == null ? null : acwr > 1.5 ? ["Spike", C.bad] : acwr > 1.3 ? ["High", C.warn] : acwr >= 0.8 ? ["Sweet spot", C.good] : ["Low", C.serious];
   const dist = t.intensity_distribution_28d || {};
   const seg = (v, c, l) => v ? `<i style="flex:${v};background:${c}" title="${l}"></i>` : "";
-  return card("tv-6", "Load analysis", C.stress, `<span class="sub">acute vs chronic</span>`, `
+  return card("tv-4", "Load analysis", C.stress, `<span class="sub">acute vs chronic</span>`, `
     <div class="stats c3">
       <div class="stat"><div class="l">ACWR</div><div class="v">${acwr ?? "–"}</div>${zone ? `<span class="delta"><i style="background:${zone[1]}"></i>${zone[0]}</span>` : ""}</div>
       <div class="stat"><div class="l">Load 7d</div><div class="v">${t.load_7d}<small>/ ${t.load_28d_weekly_avg} avg</small></div></div>
@@ -1138,7 +1194,7 @@ function vaPalette(){
   const f = DATA.fitness || {}, diff = f.chrono ? f.chrono - f.age : 0;
   return diff >= 1.5 ? ["#0b7d43", "#2fe48f", "#c9ffe5"] : diff > -1.5 ? ["#7a6a0c", "#f0cf3f", "#fff3bf"] : ["#8a3510", "#ff8a3d", "#ffd9c4"];
 }
-function paceBar(p){
+function paceBar(p, label){
   const lo = -1, hi = 3, n = 61, pos = clamp((p - lo) / (hi - lo), 0, 1);
   let ticks = "";
   for (let i = 0; i < n; i++) {
@@ -1146,28 +1202,49 @@ function paceBar(p){
     const op = 0.16 + 0.7 * Math.exp(-dd * dd / 0.006), h = 12 + 14 * Math.exp(-dd * dd / 0.003);
     ticks += `<i style="height:${h.toFixed(1)}px;opacity:${op.toFixed(2)}"></i>`;
   }
-  const label = p < 0 ? "Reversing" : p < 0.9 ? "Slow" : p <= 1.2 ? "Steady" : p <= 2 ? "Fast" : "Very fast";
-  return `<div class="pace"><div class="between"><span class="pace-head">Pace of aging</span><span class="sub">${label} · last 6 months</span></div>
+  const pl = p < 0 ? "Reversing" : p < 0.9 ? "Slow" : p <= 1.2 ? "Steady" : p <= 2 ? "Fast" : "Very fast";
+  return `<div class="pace"><div class="between"><span class="pace-head">Pace of aging</span><span class="sub">${pl} · last ${label === "1Y" ? "12 months" : label === "3M" ? "3 months" : "6 months"}</span></div>
     <div class="pace-ends"><span>◀ Slower</span><span>Faster ▶</span></div>
     <div class="pace-bar"><div class="pace-val" style="left:${(clamp(pos, 0.07, 0.93) * 100).toFixed(1)}%">${p.toFixed(1)}x</div>
       <div class="pace-track">${ticks}</div><div class="pace-mark" style="left:${(pos * 100).toFixed(1)}%"></div></div>
     <div class="pace-scale"><span>-1.0x</span><span>1.0x</span><span>3.0x</span></div></div>`;
 }
+const VA_PERIODS = [[91, "3M"], [183, "6M"], [365, "1Y"]];
+function vaPeriod(){ return state.vaPeriod || 183; }
+// Biological years gained per calendar year over the chosen window (least squares on Garmin fitness-age history)
+function paceFor(days){
+  const h = (DATA.fitness && DATA.fitness.history) || [];
+  if (!h.length) return null;
+  const end = pd(h[h.length - 1][0]).getTime();
+  const pts = h.filter(p => (end - pd(p[0]).getTime()) / 864e5 <= days + 3).map(p => [(pd(p[0]).getTime() - end) / (365.25 * 864e5), p[1]]);
+  if (pts.length < 3) return null;
+  const mx = mean(pts.map(p => p[0])), my = mean(pts.map(p => p[1]));
+  const den = pts.reduce((s2, p) => s2 + (p[0] - mx) ** 2, 0);
+  return den ? pts.reduce((s2, p) => s2 + (p[0] - mx) * (p[1] - my), 0) / den : null;
+}
 function vitalsAgeCard(cls, big){
   const f = DATA.fitness; if (!f || f.age == null) return "";
   const diff = f.chrono ? f.chrono - f.age : null, col = vaPalette()[1];
-  const ai = DATA.insights && DATA.insights.vitalsAge;
-  const h = f.history || [];
+  const AI = DATA.insights, ai = AI && AI.vitalsAge;
+  const per = vaPeriod(), pace = paceFor(per), label = (VA_PERIODS.find(x => x[0] === per) || [0, "6M"])[1];
+  const h = (f.history || []), end = h.length ? pd(h[h.length - 1][0]).getTime() : 0;
+  const inWin = h.filter(p => (end - pd(p[0]).getTime()) / 864e5 <= per + 3);
+  const change = inWin.length > 1 ? inWin[inWin.length - 1][1] - inWin[0][1] : null;
   const bar = (v, tgt, lab, unit) => v == null || !tgt ? "" : `<div style="margin:10px 0 0"><div class="between" style="font-size:.8rem;margin-bottom:5px"><span>${lab}</span><span class="sub">${v} / ${tgt}${unit}</span></div><div class="bar"><i style="width:${clamp(v / tgt * 100, 0, 100)}%;background:${col}"></i></div></div>`;
+  const seg = `<div class="seg">${VA_PERIODS.map(([d, l]) => `<button data-vaperiod="${d}" class="${per === d ? "on" : ""}">${l}</button>`).join("")}</div>`;
   return `<section class="card ${cls}" tabindex="0">
-    <div class="kicker"><h2><span class="dot" style="background:${col}"></span>Vitals Age</h2><span class="sub">${f.chrono ? "actual age " + f.chrono : ""}</span></div>
-    <div class="va-orb ${big ? "big" : ""}"><canvas data-va="1"></canvas>
-      <div class="va-center"><div class="va-age">${f.age.toFixed(1)}</div><div class="va-lab">VITALS AGE</div>
-      ${diff != null ? `<div class="va-diff" style="color:${col}">${Math.abs(diff).toFixed(1)} years ${diff >= 0 ? "younger" : "older"}</div>` : ""}</div></div>
-    ${f.pace != null ? paceBar(f.pace) : `<div class="sub" style="text-align:center;margin-top:8px">Pace of aging needs a few months of history</div>`}
-    ${ai && ai.text ? `<div class="va-note"><b>${esc(ai.title || "")}</b><p>${esc(ai.text)}</p></div>` : ""}
-    ${h.length > 2 ? `<div class="sub" style="margin:14px 0 2px">12 months: ${h[0][1].toFixed(1)} → ${h[h.length - 1][1].toFixed(1)}</div><div class="spark" data-vaspark="1" style="height:36px"></div>` : ""}
-    ${bar(f.vigorousDays, f.vigorousDaysTarget, "Vigorous days / week", "")}${bar(f.vigorousMin, f.vigorousMinTarget, "Vigorous minutes / week", " min")}
+    <div class="kicker"><h2><span class="dot" style="background:${col}"></span>Vitals Age</h2>${seg}</div>
+    <div class="va-body"><div class="va-left">
+      <div class="va-orb ${big ? "big" : ""}"><canvas data-va="1"></canvas>
+        <div class="va-center"><div class="va-age">${f.age.toFixed(1)}</div><div class="va-lab">VITALS AGE</div>
+        ${diff != null ? `<div class="va-diff" style="color:${col}">${Math.abs(diff).toFixed(1)} years ${diff >= 0 ? "younger" : "older"} · age ${f.chrono}</div>` : ""}</div></div>
+    </div><div class="va-right">
+      ${pace != null ? paceBar(pace, label) : `<div class="sub" style="text-align:center;margin-top:8px">Not enough history for a ${label} pace yet</div>`}
+      ${change != null ? `<div class="sub" style="margin-top:8px">${label}: ${inWin[0][1].toFixed(1)} → ${inWin[inWin.length - 1][1].toFixed(1)} (${change >= 0 ? "+" : ""}${change.toFixed(1)} years)${per === 91 ? " · short windows are noisy" : ""}</div>` : ""}
+      ${ai && ai.text ? `<div class="va-note"><div class="between"><b>${esc(ai.title || "")}</b>${askBtn("vitalsAge")}</div><p>${esc(ai.text)}</p></div>` : ""}
+      ${h.length > 2 ? `<div class="sub" style="margin:14px 0 2px">12 months: ${h[0][1].toFixed(1)} → ${h[h.length - 1][1].toFixed(1)}</div><div class="spark" data-vaspark="1" style="height:36px"></div>` : ""}
+      ${bar(f.vigorousDays, f.vigorousDaysTarget, "Vigorous days / week", "")}${bar(f.vigorousMin, f.vigorousMinTarget, "Vigorous minutes / week", " min")}
+    </div></div>
   </section>`;
 }
 function mountSpheres(){
@@ -1224,7 +1301,7 @@ function sphere(cv, pal){
 /* ============================================================ activity detail sheet */
 const sheet = document.createElement("div"); sheet.id = "sheet"; sheet.className = "sheet"; document.body.appendChild(sheet);
 sheet.addEventListener("scroll", () => { if (tip.style.opacity !== "0") { tip.style.opacity = 0; } }, {passive: true});
-let sheetFrom = null;
+let sheetFrom = null, sheetDet = null, sheetAct = null;
 const sheetOpen = () => sheet.classList.contains("open");
 const isFoot = t => /run|hik|walk/.test(t || ""), isSwim = t => /swim/.test(t || "");
 function paceParts(spd, type){
@@ -1247,6 +1324,7 @@ async function openActivity(id){
   let det = null;
   try { const r = await fetch("acts/" + id + ".json"); if (r.ok) det = await r.json(); } catch (e) {}
   if (!sheetOpen() || +sheet.dataset.id !== id) return;
+  sheetDet = det; sheetAct = a;
   sheet.innerHTML = sheetHTML(a, det, false);
   requestAnimationFrame(() => { mountSheet(a, det); if (TV) { const b = $("#sheet .back"); b && b.focus(); } });
 }
@@ -1306,22 +1384,24 @@ function sheetHTML(a, det, loading){
   const splits = (det && det.splits) || [];
   const maxSplitSpd = Math.max(1, ...splits.map(x => x.d / Math.max(1, x.t)));
   return `<div class="sheet-in">
-    <div class="sheet-bar"><button class="back" data-close aria-label="Back"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></button><span class="sheet-title">ACTIVITY</span><span style="width:42px"></span></div>
+    <div class="sheet-bar"><button class="back" data-close aria-label="Back"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></button><span class="sheet-title">ACTIVITY</span>${CHAT_OK ? askBtn("workout") : `<span style="width:42px"></span>`}</div>
     <div class="act-head"><div class="ty" style="background:${info.c}">${info.l}</div><div><h1>${esc(a.name || info.l)}</h1>
       <div class="sub">${fDay(st)} · ${fClock(st)}${det && det.location ? " · " + esc(det.location) : ""}</div></div></div>
     <div class="grid">
       <section class="card span-3 tv-12" tabindex="0"><div class="hero-stats">${hero.map(([l, v, u]) => `<div><div class="l">${l}</div><div class="v">${v}${u ? `<small>${u}</small>` : ""}</div></div>`).join("")}</div></section>
-      ${ai ? `<section class="card ai-mini span-3 tv-12" tabindex="0"><div class="ai-mark">AI</div><div><h3>${esc(ai.title || "")}</h3><p>${esc(ai.text || "")}</p></div></section>` : ""}
+      ${ai ? `<section class="card ai-mini span-3 tv-12" tabindex="0"><div class="ai-mark">AI</div><div style="flex:1;min-width:0"><div class="between" style="align-items:flex-start"><h3>${esc(ai.title || "")}</h3>${askBtn("workout")}</div><p>${esc(ai.text || "")}</p></div></section>` : ""}
       ${loading ? `<section class="card span-3 tv-12"><div class="empty">Loading details…</div></section>` : ""}
       ${!loading && !det ? `<section class="card span-3 tv-12"><div class="empty">Full charts and route are kept for your ${40} most recent activities.</div></section>` : ""}
-      ${det && det.route && det.route.length > 5 ? `<section class="card tv-6" tabindex="0"><div class="kicker"><h2><span class="dot" style="background:${C.heart}"></span>Route</h2><span class="sub">ends trimmed for privacy</span></div>
+      ${(det && det.route && det.route.length > 5) || splits.length ? `<div class="stack tv-6">` : ""}
+      ${det && det.route && det.route.length > 5 ? `<section class="card" tabindex="0"><div class="kicker"><h2><span class="dot" style="background:${C.heart}"></span>Route</h2><span class="sub">ends trimmed for privacy</span></div>
         <div class="route" id="s-route"></div><div class="grad-legend">Heart rate low <i></i> high</div></section>` : ""}
-      ${charts.length ? `<section class="card tv-6 ${det && det.route && det.route.length > 5 ? "" : "span-3 tv-12"}" tabindex="0"><div class="kicker"><h2><span class="dot" style="background:${C.ink}"></span>Over the ${ser.d ? "distance" : "session"}</h2><span class="readout" id="s-readout">${TV ? "" : "Drag across a chart"}</span></div>
-        ${charts.map(([k, l, u]) => `<div class="chart-head"><b>${l}</b><span>${u}</span></div><div class="chart" id="s-c-${k}"></div>`).join("")}</section>` : ""}
-      ${splits.length ? `<section class="card tv-6" tabindex="0"><div class="kicker"><h2><span class="dot" style="background:${C.steps}"></span>Splits</h2><span class="sub">per ${det.splitUnit >= 1000 ? det.splitUnit / 1000 + " km" : det.splitUnit + " m"}</span></div>
+      ${splits.length ? `<section class="card" tabindex="0"><div class="kicker"><h2><span class="dot" style="background:${C.steps}"></span>Splits</h2><span class="sub">per ${det.splitUnit >= 1000 ? det.splitUnit / 1000 + " km" : det.splitUnit + " m"}</span></div>
         <table class="splits"><thead><tr><th>#</th><th>${isFoot(a.type) ? "Pace" : "Speed"}</th><th>HR</th><th>Gain</th><th></th></tr></thead><tbody>
         ${splits.map(x => { const v = x.d / Math.max(1, x.t); return `<tr><td>${x.n}${x.d < det.splitUnit * 0.95 ? "*" : ""}</td><td>${isFoot(a.type) ? secPace(x.t / x.d * 1000) : (v * 3.6).toFixed(1)}</td><td>${x.hr ?? "–"}</td><td>${x.gain != null ? x.gain + " m" : "–"}</td><td class="bar-cell"><i style="width:${(v / maxSplitSpd * 100).toFixed(0)}%"></i></td></tr>`; }).join("")}
         </tbody></table></section>` : ""}
+      ${(det && det.route && det.route.length > 5) || splits.length ? `</div>` : ""}
+      ${charts.length ? `<section class="card ${(det && det.route && det.route.length > 5) || splits.length ? "tv-6" : "span-3 tv-12"}" tabindex="0"><div class="kicker"><h2><span class="dot" style="background:${C.ink}"></span>Over the ${ser.d ? "distance" : "session"}</h2><span class="readout" id="s-readout">${TV ? "" : "Drag across a chart"}</span></div>
+        ${charts.map(([k, l, u]) => `<div class="chart-head"><b>${l}</b><span>${u}</span></div><div class="chart" id="s-c-${k}"></div>`).join("")}</section>` : ""}
       ${zt ? `<section class="card tv-6" tabindex="0"><div class="kicker"><h2><span class="dot" style="background:${C.heart}"></span>Heart rate zones</h2><span class="sub">${fDur(zt)}</span></div>
         <div class="zones" style="height:14px">${zones.map((z, k) => z ? `<i style="flex:${z};background:${ZONE_COLS[k]}"></i>` : "").join("")}</div>
         <table class="splits" style="margin-top:8px"><tbody>${zones.map((z, k) => `<tr><td><span class="dot" style="background:${ZONE_COLS[k]};margin-right:6px"></span>Z${k + 1}</td><td>${fDur(z || 0)}</td><td>${Math.round((z || 0) / zt * 100)}%</td><td class="bar-cell"><i style="width:${Math.round((z || 0) / zt * 100)}%;background:${ZONE_COLS[k]}"></i></td></tr>`).join("")}</tbody></table></section>` : ""}
@@ -1348,7 +1428,7 @@ function mountSheet(a, det){
     const rt = det.route, lat0 = rt.reduce((x, p) => x + p[0], 0) / rt.length, kx = Math.cos(lat0 * Math.PI / 180);
     const px = rt.map(p => [p[1] * kx, -p[0]]);
     const minX = Math.min(...px.map(p => p[0])), maxX = Math.max(...px.map(p => p[0])), minY = Math.min(...px.map(p => p[1])), maxY = Math.max(...px.map(p => p[1]));
-    const W = routeEl.clientWidth, H = Math.round(TV ? Math.min(W * 0.95, rem() * 34) : Math.min(W * 0.75, 320)), pad = 16;
+    const W = routeEl.clientWidth, H = Math.round(TV ? Math.min(W * 0.75, rem() * 24) : Math.min(W * 0.75, 320)), pad = 16;
     const sc = Math.min((W - 2 * pad) / ((maxX - minX) || 1e-9), (H - 2 * pad) / ((maxY - minY) || 1e-9));
     const ox = (W - (maxX - minX) * sc) / 2, oy = (H - (maxY - minY) * sc) / 2;
     routePts = px.map((p, i) => [ox + (p[0] - minX) * sc, oy + (p[1] - minY) * sc, rt[i][2]]);
@@ -1397,6 +1477,215 @@ function mountSheet(a, det){
   if (S.stamina) draw("stamina", { series: [{ ys: S.stamina, color: C.vo2, w: 1.8, area: true }], yMin: 0, yMax: 100 });
 }
 
+
+/* ============================================================ Ask Vitals AI (follow-up questions, phone + desktop) */
+const CHAT_OK = !TV;
+const SPARK = '<svg viewBox="0 0 24 24"><path d="M12 2l2.1 5.6L20 9.8l-5.9 2.2L12 18l-2.1-6L4 9.8l5.9-2.2z"/><path d="M19 15l.9 2.3 2.3.9-2.3.9L19 22l-.9-2.4-2.3-.9 2.3-.9z"/></svg>';
+function askBtn(key){ return CHAT_OK ? `<button class="ask" data-ask="${key}" aria-label="Ask AI a follow-up">${SPARK}Ask</button>` : ""; }
+const ASK = {
+  today: ["Today's briefing", ["What should I do today?", "Why is my Recovery at this level?", "How do I fix my sleep debt fastest?"]],
+  insights: ["Your insights", ["Which of these matters most?", "What's driving my numbers this week?", "Give me a plan for the next 3 days"]],
+  sleep: ["Sleep", ["Why was last night so short?", "How can I get more deep and REM sleep?", "Does evening exercise hurt my sleep?"]],
+  heart: ["Heart & recovery", ["Is my HRV good for me?", "What's moving my resting heart rate?", "How do I raise my HRV?"]],
+  activity: ["Training load", ["Am I training too much right now?", "Plan my next 7 days of training", "How should I balance easy and hard sessions?"]],
+  trends: ["Trends", ["What changed most this month?", "Which habit helps me most?", "What's my biggest risk right now?"]],
+  vitalsAge: ["Vitals Age", ["How do I lower my Vitals Age?", "Why is my pace of aging so high?", "Plan my vigorous days this week"]],
+  workout: ["This workout", ["How hard was this session?", "When can I train hard again?", "How was my pacing and heart rate?"]],
+};
+const chatThreads = {};
+let chatKey = null, chatBusy = false, coachSkill = null, rec = null, recOn = false;
+const chat = document.createElement("div");
+chat.id = "chat";
+chat.innerHTML = `<div class="chat-dim" data-chatclose></div>
+  <div class="chat-panel" role="dialog" aria-label="Ask Vitals AI">
+    <div class="chat-head"><div><div class="chat-title">${SPARK}ASK VITALS AI</div><div class="sub" id="chat-topic"></div></div>
+      <div><button class="chat-ico" id="chat-gear" aria-label="AI settings"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
+      <button class="chat-ico" data-chatclose aria-label="Close"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div></div>
+    <div class="chat-body" id="chat-body"></div>
+    <div class="chat-foot" id="chat-foot"><textarea id="chat-in" rows="1" placeholder="Ask a follow-up…" enterkeyhint="send"></textarea>
+      <button class="chat-mic" id="chat-mic" aria-label="Voice input"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button>
+      <button class="chat-send" id="chat-send" aria-label="Send"><svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button></div>
+  </div>`;
+document.body.appendChild(chat);
+const $c = sel => chat.querySelector(sel);
+const getKey = () => { try { return localStorage.getItem("vitals.geminiKey") || ""; } catch (e) { return ""; } };
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+if (!SR) $c("#chat-mic").style.display = "none";
+
+function mdLite(t){
+  const lines = esc(t).replace(/\*\*(.+?)\*\*/g, "<b>$1</b>").replace(/(^|[^*])\*([^*\n]+)\*/g, "$1<i>$2</i>").split(/\n/);
+  let html = "", list = null;
+  lines.forEach(l => {
+    const m = l.match(/^\s*(?:[-*•]|(\d+)[.)])\s+(.*)$/);
+    if (m) { const tag = m[1] ? "ol" : "ul"; if (list !== tag) { if (list) html += `</${list}>`; html += `<${tag}>`; list = tag; } html += `<li>${m[2]}</li>`; return; }
+    if (list) { html += `</${list}>`; list = null; }
+    if (l.trim()) html += `<p>${l.replace(/^#+\s*/, "")}</p>`;
+  });
+  if (list) html += `</${list}>`;
+  return html;
+}
+function insightFor(key){
+  const I = DATA.insights || {};
+  if (key === "today") { const t = I.today || (I.headline ? I : null); return t && { title: t.headline, text: [t.body].concat((t.tips || []).map(x => "• " + x)).join("\n") }; }
+  if (key === "insights") { const r = ruleInsights().slice(0, 6); return r.length ? { title: "Rule-based insights", text: r.map(x => "• " + x.title + ": " + x.text).join("\n") } : null; }
+  if (key === "workout") return I.latestActivityId === (sheetAct && sheetAct.id) ? I.latestActivity : null;
+  return I[key] || null;
+}
+function renderChat(){
+  const th = chatThreads[chatKey] || [], body = $c("#chat-body");
+  if (!getKey()) { renderKeySetup(); return; }
+  $c("#chat-foot").style.display = "";
+  const ins = insightFor(chatKey);
+  let h = ins ? `<div class="msg ctx"><b>${esc(ins.title || "")}</b>${mdLite(ins.text || "")}</div>` : "";
+  th.forEach(m => { h += `<div class="msg ${m.role}${m.err ? " err" : ""}">${m.role === "model" ? mdLite(m.text) : esc(m.text)}</div>`; });
+  if (chatBusy) h += `<div class="msg model"><span class="typing"><i></i><i></i><i></i></span></div>`;
+  if (!th.length && !chatBusy) h += `<div class="sub" style="margin:4px 0 8px">Ask anything about your data, or try:</div><div class="chips">${ASK[chatKey][1].map(q => `<button class="chip" data-q="${esc(q)}">${esc(q)}</button>`).join("")}</div>`;
+  body.innerHTML = h;
+  body.scrollTop = body.scrollHeight;
+  $c("#chat-send").disabled = chatBusy;
+}
+function renderKeySetup(msg){
+  $c("#chat-foot").style.display = "none";
+  const has = !!getKey();
+  $c("#chat-body").innerHTML = `<div class="keybox">
+    <p style="margin-top:0"><b>Connect Gemini to ask follow-up questions.</b></p>
+    <p class="sub">Paste a Gemini API key from <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener" style="color:#3ff0a0">aistudio.google.com/apikey</a>. You can use the same key as the daily sync.
+    It's saved <b>only on this device</b> and is never part of the public site. Your question plus a summary of your health data are sent to Google Gemini to answer it.</p>
+    <input id="key-in" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${has ? "Key saved · paste a new one to replace" : "AIza…"}">
+    ${msg ? `<div class="msg err" style="max-width:100%">${esc(msg)}</div>` : ""}
+    <button class="btn" id="key-save">Save key</button>${has ? `<button class="btn ghost" id="key-back">Back to chat</button><button class="btn ghost" id="key-del">Remove key</button>` : ""}
+    <p class="sub" style="margin-top:14px">In mainland China, Gemini needs a VPN on your phone.</p></div>`;
+}
+function openChat(key){
+  if (!CHAT_OK || !ASK[key]) return;
+  hideTip(); chatKey = key;
+  $c("#chat-topic").textContent = ASK[key][0];
+  chat.classList.add("open"); document.body.classList.add("chat-open");
+  renderChat();
+}
+function closeChat(){ stopVoice(); chat.classList.remove("open"); document.body.classList.remove("chat-open"); $c("#chat-in").blur(); }
+function chatContext(key){
+  const last14 = DAYS.slice(-14).map(d => ({ date: d.date, sleep_min: d.sleep ? Math.round(d.sleep.total / 60) : null, sleep_score: d.sleep ? d.sleep.score : null,
+    bedtime: d.sleep && d.sleep.start ? d.sleep.start.slice(11, 16) : null, hrv: d.hrv ? d.hrv.night : null, rhr: d.rhr, steps: d.steps, stress: d.stress,
+    recovery: d.readiness ? d.readiness.score : null, body_battery_peak: d.bbHigh, intensity_min: d.intensity }));
+  const acts = (DATA.activities || []).slice(0, 12).map(a => ({ start: a.start, type: a.type, name: a.name, min: Math.round(a.duration / 60), km: +((a.distance || 0) / 1000).toFixed(1),
+    avg_hr: a.avgHr, max_hr: a.maxHr, load: a.load, te_aerobic: a.teAer, te_anaerobic: a.teAna, label: a.teLabel, zones_sec: a.zones }));
+  const f = DATA.fitness;
+  const ctx = { topic: ASK[key][0], today: TODAY.date, insight_on_screen: insightFor(key), computed_facts: DATA.analysis || {}, last_14_days: last14, recent_activities: acts,
+    vitals_age: f ? { age: f.age, actual_age: f.chrono, achievable: f.achievable, pace_3m: paceFor(91), pace_6m: paceFor(183), pace_1y: paceFor(365),
+      vigorous_days_week: f.vigorousDays, vigorous_days_target: f.vigorousDaysTarget, vigorous_min_week: f.vigorousMin, vigorous_min_target: f.vigorousMinTarget,
+      history: (f.history || []).filter((_, i, a) => i % 2 === 0 || i === a.length - 1) } : null };
+  if (key === "workout" && sheetAct) {
+    ctx.this_workout = Object.assign({ name: sheetAct.name, type: sheetAct.type, start: sheetAct.start, zones_sec: sheetAct.zones },
+      sheetDet ? { summary: sheetDet.summary, splits: sheetDet.splits, split_unit_m: sheetDet.splitUnit, location: sheetDet.location } : { summary: sheetAct });
+  }
+  return ctx;
+}
+async function chatSystem(){
+  if (coachSkill == null) {
+    try { const r = await fetch("coach_skill.md"); coachSkill = r.ok ? await r.text() : ""; } catch (e) { coachSkill = ""; }
+    coachSkill = coachSkill.split("## Output")[0];
+  }
+  return coachSkill + `
+## Chat mode (overrides the output section)
+You are now answering the user's follow-up questions in a chat inside the Vitals app.
+- The first user message contains CONTEXT: the computed facts, last 14 days, recent activities and the insight currently on screen.
+- Answer the question directly in 40-150 words. Short paragraphs, or up to 5 bullets when listing steps. Light markdown only (**bold**, bullets).
+- Quote their real numbers and dates. If the data can't answer something, say exactly what's missing.
+- For plans, give concrete days, durations and intensities (heart rate zones).
+- No medical diagnosis. Suggest seeing a doctor only if they describe worrying symptoms.`;
+}
+async function chatModels(key){
+  try { const c = JSON.parse(sessionStorage.getItem("vitals.models") || "null"); if (c && c.length) return c; } catch (e) {}
+  const r = await fetch("https://generativelanguage.googleapis.com/v1beta/models?pageSize=200", { headers: { "x-goog-api-key": key } });
+  if (r.status === 400 || r.status === 401 || r.status === 403) throw new Error("KEY");
+  if (!r.ok) throw new Error("NET");
+  const j = await r.json(), bad = /preview|exp|image|tts|live|audio|embedding|transcribe|omni|robotics|computer|latest|nano/;
+  const list = (j.models || []).filter(m => (m.supportedGenerationMethods || []).indexOf("generateContent") >= 0).map(m => m.name.split("/")[1])
+    .map(n => { const m = n.match(/^gemini-(\d+(?:\.\d+)?)-flash(-lite)?$/); return m && !bad.test(n) ? [m[2] ? 0 : 1, parseFloat(m[1]), n] : null; })
+    .filter(Boolean).sort((a, b) => b[0] - a[0] || b[1] - a[1]).map(x => x[2]);
+  const full = list.filter(n => !/-lite$/.test(n)).slice(0, 4), lite = list.filter(n => /-lite$/.test(n)).slice(0, 2), out = full.concat(lite);
+  try { sessionStorage.setItem("vitals.models", JSON.stringify(out)); } catch (e) {}
+  return out;
+}
+async function askGemini(contents){
+  const key = getKey(), sys = await chatSystem();
+  let models = await chatModels(key);
+  let good = null; try { good = localStorage.getItem("vitals.goodModel"); } catch (e) {}
+  if (good && models.indexOf(good) > 0) models = [good].concat(models.filter(m => m !== good));
+  for (const m of models) {
+    const ctl = new AbortController(), to = setTimeout(() => ctl.abort(), 30000);
+    try {
+      const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent`, { method: "POST", signal: ctl.signal,
+        headers: { "content-type": "application/json", "x-goog-api-key": key },
+        body: JSON.stringify({ systemInstruction: { parts: [{ text: sys }] }, contents, generationConfig: { temperature: 0.6, maxOutputTokens: 2048 } }) });
+      clearTimeout(to);
+      if (r.status === 401 || r.status === 403) throw new Error("KEY");
+      if (r.status === 400) { const t = await r.text(); if (/API key/i.test(t)) throw new Error("KEY"); continue; }
+      if (!r.ok) continue;                                   // 429/503: model busy, try the next one
+      const j = await r.json();
+      const text = ((j.candidates && j.candidates[0] && j.candidates[0].content && j.candidates[0].content.parts) || []).filter(p => !p.thought).map(p => p.text || "").join("");
+      if (text.trim()) { try { localStorage.setItem("vitals.goodModel", m); } catch (e) {} return text; }
+    } catch (e) { clearTimeout(to); if (e.message === "KEY") throw e; }
+  }
+  throw new Error("BUSY");
+}
+async function sendChat(q){
+  q = (q || "").trim(); if (!q || chatBusy) return;
+  stopVoice();
+  const th = chatThreads[chatKey] || (chatThreads[chatKey] = []);
+  th.push({ role: "user", text: q });
+  $c("#chat-in").value = ""; growInput();
+  chatBusy = true; renderChat();
+  const contents = th.filter(m => !m.err).map((m, i) => ({ role: m.role, parts: [{ text: i === 0 ? "CONTEXT (my data):\n```json\n" + JSON.stringify(chatContext(chatKey)) + "\n```\n\nQuestion: " + m.text : m.text }] }));
+  try {
+    th.push({ role: "model", text: await askGemini(contents) });
+  } catch (e) {
+    if (e.message === "KEY") { th.pop(); chatBusy = false; renderKeySetup("Gemini rejected the key. Check it and paste it again."); return; }
+    th.push({ role: "model", err: true, text: e.message === "BUSY" ? "Gemini is busy right now (all models overloaded). Try again in a minute." : "Couldn't reach Gemini. Check your connection (a VPN is needed in mainland China)." });
+  }
+  chatBusy = false; renderChat();
+}
+function growInput(){ const t = $c("#chat-in"); t.style.height = "auto"; t.style.height = Math.min(130, t.scrollHeight) + "px"; }
+function stopVoice(){ if (rec && recOn) { try { rec.stop(); } catch (e) {} } recOn = false; $c("#chat-mic").classList.remove("on"); }
+function toggleVoice(){
+  if (!SR) return;
+  if (recOn) { stopVoice(); return; }
+  const input = $c("#chat-in"), base = input.value ? input.value.replace(/\s*$/, " ") : "";
+  rec = new SR(); rec.lang = navigator.language || "en-US"; rec.interimResults = true; rec.continuous = false;
+  rec.onresult = e => { let t = ""; for (let i = 0; i < e.results.length; i++) t += e.results[i][0].transcript; input.value = base + t; growInput(); };
+  rec.onerror = e => { stopVoice(); if (e.error === "not-allowed" || e.error === "service-not-allowed") { const th = chatThreads[chatKey] || (chatThreads[chatKey] = []); th.push({ role: "model", err: true, text: "Voice input isn't allowed here. Use the microphone on your keyboard instead." }); renderChat(); } };
+  rec.onend = () => { recOn = false; $c("#chat-mic").classList.remove("on"); };
+  try { rec.start(); recOn = true; $c("#chat-mic").classList.add("on"); } catch (e) { stopVoice(); }
+}
+chat.addEventListener("click", async e => {
+  const t = e.target.closest("[data-chatclose], button"); if (!t) return;
+  if (t.hasAttribute("data-chatclose")) { closeChat(); return; }
+  if (t.dataset.q) { sendChat(t.dataset.q); return; }
+  if (t.id === "chat-send") { sendChat($c("#chat-in").value); return; }
+  if (t.id === "chat-mic") { toggleVoice(); return; }
+  if (t.id === "chat-gear") { renderKeySetup(); return; }
+  if (t.id === "key-back") { renderChat(); return; }
+  if (t.id === "key-del") { try { localStorage.removeItem("vitals.geminiKey"); sessionStorage.removeItem("vitals.models"); } catch (er) {} renderKeySetup(); return; }
+  if (t.id === "key-save") {
+    const v = ($c("#key-in").value || "").trim();
+    if (!v) { if (getKey()) renderChat(); return; }
+    t.textContent = "Checking…";
+    try {
+      const r = await fetch("https://generativelanguage.googleapis.com/v1beta/models?pageSize=1", { headers: { "x-goog-api-key": v } });
+      if (!r.ok) { renderKeySetup("Gemini rejected that key (HTTP " + r.status + ")."); return; }
+      localStorage.setItem("vitals.geminiKey", v); sessionStorage.removeItem("vitals.models"); renderChat();
+    } catch (er) { renderKeySetup("Couldn't reach Gemini to check the key. A VPN is needed in mainland China."); }
+  }
+});
+$c("#chat-in").addEventListener("input", growInput);
+$c("#chat-in").addEventListener("keydown", e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendChat(e.target.value); } });
+// keep the panel above the iOS keyboard
+if (window.visualViewport) visualViewport.addEventListener("resize", () => {
+  const off = Math.max(0, innerHeight - visualViewport.height - visualViewport.offsetTop);
+  chat.querySelector(".chat-panel").style.bottom = off + "px";
+});
+
 /* ============================================================ render */
 function renderTabs(){
   const nav = $("#tabs");
@@ -1434,13 +1723,16 @@ document.addEventListener("click", e => {
   else if (b.dataset.range) { state.range = +b.dataset.range; saveState(); render(true); restoreFocus(`[data-range="${b.dataset.range}"]`); }
   else if (b.dataset.heat) { state.heat = b.dataset.heat; render(true); restoreFocus(`[data-heat="${b.dataset.heat}"]`); }
   else if (b.dataset.month) { state.month = b.dataset.month; render(true); restoreFocus(`[data-month="${b.dataset.month}"]`); }
+  else if (b.dataset.ask) { openChat(b.dataset.ask); }
   else if (b.dataset.act) { openActivity(+b.dataset.act); }
   else if (b.dataset.close != null) { closeActivity(); }
   else if (b.dataset.metric) { state.actMetric = b.dataset.metric; }
+  else if (b.dataset.vaperiod) { state.vaPeriod = +b.dataset.vaperiod; try { localStorage.setItem("vitals.vaPeriod", state.vaPeriod); } catch (e) {} render(true); restoreFocus(`[data-vaperiod="${b.dataset.vaperiod}"]`); }
 });
 function go(view){ state.view = view; history.replaceState(null, "", "#" + view); window.scrollTo(0, 0); $("#app").scrollTop = 0; render(); }
 function restoreFocus(sel){ if (TV) requestAnimationFrame(() => $(sel)?.focus()); }
 function saveState(){ try { localStorage.setItem("vitals.range", state.range); } catch(e) {} }
+try { const v = +localStorage.getItem("vitals.vaPeriod"); if ([91, 183, 365].includes(v)) state.vaPeriod = v; } catch (e) {}
 try { const r = +localStorage.getItem("vitals.range"); if ([7,30,90,365].includes(r)) state.range = r; } catch(e) {}
 addEventListener("hashchange", () => { const v = location.hash.slice(1); if (VIEWS.includes(v) && v !== state.view) { state.view = v; window.scrollTo(0, 0); render(); } });
 let rt; addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(() => { fitTV(); render(true); }, 150); });
@@ -1499,7 +1791,7 @@ function startAmbient(){
 }
 function stopAmbient(){ if (!ambientTimer) return false; clearInterval(ambientTimer); ambientTimer = null; document.body.classList.remove("ambient"); focusFirst(); return true; }
 function resetIdle(){ clearTimeout(idleTimer); if (TV) idleTimer = setTimeout(startAmbient, IDLE_MS); }
-document.addEventListener("keydown", e => { if (!TV && e.key === "Escape" && sheetOpen()) closeActivity(); });
+document.addEventListener("keydown", e => { if (!TV && e.key === "Escape") { if (chat.classList.contains("open")) closeChat(); else if (sheetOpen()) closeActivity(); } });
 document.addEventListener("keydown", e => {
   if (!TV && !/^Arrow/.test(e.key)) return;
   if (stopAmbient()) { e.preventDefault(); resetIdle(); return; }

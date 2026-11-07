@@ -467,8 +467,8 @@ def fetch(days_back, prev):
             }
             # Vitals Age history: one point per month for a year -> pace of aging
             hist_pts = []
-            for months in range(12, 0, -1):
-                d = today - dt.timedelta(days=round(months * 30.44))
+            for k in range(26, 0, -1):  # every 14 days for a year
+                d = today - dt.timedelta(days=k * 14)
                 r = call(c.get_fitness_age, iso(d)) or {}
                 if r.get("fitnessAge"):
                     hist_pts.append([iso(d), round(r["fitnessAge"], 2)])

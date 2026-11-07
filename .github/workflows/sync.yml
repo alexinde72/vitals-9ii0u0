@@ -55,6 +55,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
+      - name: Publish the coach skill for in-app chat
+        run: cp sync/coach_skill.md web/coach_skill.md
       - name: Make the app run on older TV browsers
         run: python sync/legacy_build.py web/index.html
 

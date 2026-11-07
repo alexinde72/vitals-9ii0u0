@@ -8,3 +8,4 @@ tv/build/
 tv/*.apk
 tv/*.idsig
 web/acts/
+web/coach_skill.md
