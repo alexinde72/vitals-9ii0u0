@@ -1082,6 +1082,15 @@ document.addEventListener("keydown", e => {
   }
   else if ((k === "Escape" || k === "Backspace" || k === "GoBack") && TV) { if (!document.activeElement?.closest("nav")) { e.preventDefault(); focusFirst(); } }
 });
+// Hooks for the Android TV wrapper app
+window.tvBack = () => {           // remote Back: stop ambient, else return to the menu, else let the app exit
+  if (stopAmbient()) { resetIdle(); return true; }
+  resetIdle();
+  if (!document.activeElement?.closest("nav")) { focusFirst(); $("#app").scrollTo({top: 0, behavior: "smooth"}); return true; }
+  return false;
+};
+window.tvAmbient = () => { if (!ambientTimer) startAmbient(); else { stopAmbient(); resetIdle(); } };
+window.tvResume = () => { if (DATA && Date.now() - new Date(DATA.generated) > 36e5) load(); };
 document.addEventListener("keyup", e => { if (e.key === "Enter" || e.key === " ") okDown = 0; });
 document.addEventListener("focusin", e => { if (!TV) return; const t = e.target.closest(".tab"); if (t && t.dataset.view && t.dataset.view !== state.view && !ambientTimer) { /* switch on focus for snappy TV feel */ go(t.dataset.view); requestAnimationFrame(() => $(`.tab[data-view="${t.dataset.view}"]`)?.focus()); } });
 
