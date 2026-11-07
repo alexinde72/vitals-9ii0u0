@@ -17,15 +17,22 @@ import json
 import math
 import os
 import random
+import re
 import sys
 import time
 import urllib.error
 import urllib.request
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from analysis import analyse, fitness_pace  # noqa: E402
+
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "web" / "data.json"
 HISTORY_DAYS = 400
+DETAIL_ACTIVITIES = 40      # newest activities that get a full detail file (web/acts/<id>.json)
+DETAIL_VERSION = 2
+PRIVACY_TRIM_M = 400        # GPS route start/end trimmed so the public site doesn't reveal home
 MAX_ACTIVITIES = 150
 
 
@@ -195,6 +202,134 @@ def minute_series(values, ts_index=0, val_index=1, step=5):
     return out
 
 
+# ---------------------------------------------------------------- activity details
+def prev_base_url():
+    u = os.getenv("PREVIOUS_DATA_URL")
+    return u.rsplit("/", 1)[0] + "/" if u else None
+
+
+def fetch_details(c, activities, base):
+    out_dir = OUT.parent / "acts"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    reused = fetched = 0
+    for a in activities:
+        aid = a.get("id")
+        if not aid:
+            continue
+        path = out_dir / ("%s.json" % aid)
+        if base:  # reuse the copy already published, so each run only fetches new activities
+            try:
+                with urllib.request.urlopen("%sacts/%s.json" % (base, aid), timeout=20) as r:
+                    data = json.load(r)
+                if data.get("v") == DETAIL_VERSION:
+                    path.write_text(json.dumps(data, separators=(",", ":")))
+                    reused += 1
+                    continue
+            except Exception:  # noqa: BLE001
+                pass
+        summ = call(c.get_activity, aid) or {}
+        det = call(c.get, "/activity-service/activity/%s/details" % aid, params={"maxChartSize": 4000, "maxPolylineSize": 4000}) or {}
+        try:
+            data = build_detail(a, summ, det)
+        except Exception as e:  # noqa: BLE001
+            print("  ! detail %s failed: %s" % (aid, e), file=sys.stderr)
+            continue
+        path.write_text(json.dumps(data, separators=(",", ":")))
+        fetched += 1
+        time.sleep(0.3)
+    print("  activity details: %d fetched, %d reused" % (fetched, reused))
+
+
+def build_detail(a, summ, det):
+    s = summ.get("summaryDTO") or {}
+    idx = {m["key"]: m["metricsIndex"] for m in det.get("metricDescriptors") or []}
+    rows = [r.get("metrics") or [] for r in det.get("activityDetailMetrics") or []]
+
+    def col(*keys):
+        for k in keys:
+            if k in idx:
+                i = idx[k]
+                return [r[i] if i < len(r) else None for r in rows]
+        return None
+
+    t = col("sumDuration", "sumElapsedDuration")
+    dist = col("sumDistance")
+    series_src = {
+        "hr": col("directHeartRate"), "speed": col("directSpeed", "directGradeAdjustedSpeed"), "elev": col("directElevation"),
+        "cad": col("directDoubleCadence", "directBikeCadence", "directRunCadence"),  # double = both legs (spm) "power": col("directPower"),
+        "resp": col("directRespirationRate"), "stamina": col("directAvailableStamina"), "bb": col("directBodyBattery"),
+    }
+    lat, lon = col("directLatitude"), col("directLongitude")
+    n = len(rows)
+    step = max(1, n // 400)
+    series = {"t": [], "d": []}
+    for k in series_src:
+        if series_src[k] and any(v is not None for v in series_src[k]):
+            series[k] = []
+    for i0 in range(0, n, step):
+        i1 = min(n, i0 + step)
+        series["t"].append(round(t[i1 - 1]) if t and t[i1 - 1] is not None else None)
+        series["d"].append(round(dist[i1 - 1]) if dist and dist[i1 - 1] is not None else None)
+        for k in series:
+            if k in ("t", "d"):
+                continue
+            vals = [v for v in series_src[k][i0:i1] if v is not None]
+            series[k].append(round(sum(vals) / len(vals), 2 if k == "speed" else 1) if vals else None)
+    if not any(v is not None for v in series["d"]):
+        series.pop("d")
+
+    # km / 5 km splits from full resolution
+    splits = []
+    typ = a.get("type") or ""
+    unit = 5000 if re.search(r"cycl|bik|ride", typ) else 1000
+    if dist and t and (s.get("distance") or 0) >= unit * 0.9 and not re.search(r"swim", typ):
+        hr = series_src["hr"] or [None] * n
+        el = series_src["elev"] or [None] * n
+        mark, t0, i_start = unit, 0.0, 0
+        for i in range(n):
+            if dist[i] is None or t[i] is None:
+                continue
+            last = i == n - 1
+            if dist[i] >= mark or (last and dist[i] - (mark - unit) >= unit * 0.2):
+                seg_hr = [v for v in hr[i_start:i + 1] if v]
+                seg_el = [v for v in el[i_start:i + 1] if v is not None]
+                gain = sum(max(0, b - a2) for a2, b in zip(seg_el, seg_el[1:])) if len(seg_el) > 1 else None
+                seg_d = dist[i] - (mark - unit)
+                splits.append({"n": len(splits) + 1, "d": round(seg_d), "t": round(t[i] - t0),
+                               "hr": round(sum(seg_hr) / len(seg_hr)) if seg_hr else None, "gain": round(gain) if gain is not None else None})
+                t0, i_start, mark = t[i], i, mark + unit
+
+    # GPS route (privacy-trimmed at both ends)
+    route = []
+    pts = []
+    if lat and lon:
+        pts = [(la, lo, d) for la, lo, d in zip(lat, lon, dist or [None] * n) if la is not None and lo is not None]
+    if not pts:
+        pts = [(p.get("lat"), p.get("lon"), None) for p in g(det, "geoPolylineDTO", "polyline", default=[]) or [] if p.get("lat") is not None]
+    if len(pts) > 20:
+        total = next((p[2] for p in reversed(pts) if p[2] is not None), None)
+        if total and total > PRIVACY_TRIM_M * 3:
+            pts = [p for p in pts if p[2] is not None and PRIVACY_TRIM_M <= p[2] <= total - PRIVACY_TRIM_M]
+        else:
+            k = max(1, len(pts) // 10)
+            pts = pts[k:-k]
+        st = max(1, len(pts) // 500)
+        route = [[round(p[0], 5), round(p[1], 5), round(p[2]) if p[2] is not None else None] for p in pts[::st]]
+
+    keep = ("distance", "duration", "movingDuration", "elevationGain", "elevationLoss", "maxElevation", "minElevation",
+            "averageSpeed", "averageMovingSpeed", "maxSpeed", "calories", "averageHR", "maxHR", "minHR", "averageRunCadence",
+            "maxRunCadence", "averageBikeCadence", "averagePower", "maxPower", "normalizedPower", "groundContactTime",
+            "strideLength", "verticalOscillation", "verticalRatio", "trainingEffect", "anaerobicTrainingEffect",
+            "aerobicTrainingEffectMessage", "anaerobicTrainingEffectMessage", "trainingEffectLabel", "activityTrainingLoad",
+            "avgRespirationRate", "maxRespirationRate", "beginPotentialStamina", "endPotentialStamina", "minAvailableStamina",
+            "differenceBodyBattery", "steps", "waterEstimated", "impactLoad", "moderateIntensityMinutes", "vigorousIntensityMinutes",
+            "avgGradeAdjustedSpeed", "averageSwolf", "activeLengths", "poolLength", "averageStrokes")
+    summary = {k: (round(s[k], 2) if isinstance(s[k], float) else s[k]) for k in keep if s.get(k) is not None}
+    return {"v": DETAIL_VERSION, "id": a.get("id"), "name": a.get("name"), "type": typ, "start": a.get("start"),
+            "location": summ.get("locationName"), "summary": summary, "zones": a.get("zones"),
+            "series": series, "splits": splits, "splitUnit": unit, "route": route}
+
+
 # ---------------------------------------------------------------- recovery (computed)
 def add_recovery(days):
     """Garmin's Personal API has no Training Readiness, so compute a Whoop-style recovery score:
@@ -330,6 +465,20 @@ def fetch(days_back, prev):
                 "vigorousMinTarget": g(fa, "components", "vigorousMinutesAvg", "targetValue"),
                 "bmi": g(fa, "components", "bmi", "value"),
             }
+            # Vitals Age history: one point per month for a year -> pace of aging
+            hist_pts = []
+            for months in range(12, 0, -1):
+                d = today - dt.timedelta(days=round(months * 30.44))
+                r = call(c.get_fitness_age, iso(d)) or {}
+                if r.get("fitnessAge"):
+                    hist_pts.append([iso(d), round(r["fitnessAge"], 2)])
+                time.sleep(0.2)
+            hist_pts.append([t, round(fa["fitnessAge"], 2)])
+            fitness["history"] = hist_pts
+            fitness["pace"] = fitness_pace(hist_pts)
+            fitness["pace_window_days"] = 183
+
+        fetch_details(c, activities[:DETAIL_ACTIVITIES], prev_base_url())
 
     name = (acts[0].get("ownerFullName") if acts else None) or g(prev, "profile", "name")
     return by_date, intraday, activities, {"name": name, "device": "fēnix 8 Pro"}, fitness
@@ -467,47 +616,14 @@ def sample():
 
 
 # ---------------------------------------------------------------- AI insights
-AI_PROMPT = """You are a sharp, encouraging health coach reading someone's Garmin data.
-Write today's briefing based on the JSON below (last 14 days in detail plus 90-day and 365-day averages).
-Rules: be specific with numbers, compare to their own baselines, no medical diagnoses, no generic advice.
-Write durations like "4h 43m" (never decimal hours). "recovery_pct" is the app's Recovery score (0-100%, from HRV, resting HR and sleep vs baseline); call it Recovery. Keep the body under 70 words.
-Return ONLY JSON: {"headline": "<max 8 words>", "body": "<2-3 sentences>", "tips": ["<short actionable tip>", "<tip>", "<tip>"]}"""
+COACH_SKILL = (Path(__file__).resolve().parent / "coach_skill.md").read_text()
 
 
-def ai_insights(days, activities):
+def ai_insights(days, activities, fitness=None):
     if not (os.getenv("GEMINI_API_KEY") or os.getenv("ANTHROPIC_API_KEY")):
         return None
-
-    def avg(rows, f):
-        v = [f(r) for r in rows]
-        v = [x for x in v if x is not None]
-        return round(sum(v) / len(v), 1) if v else None
-
-    def summ(rows):
-        return {
-            "sleep_h": avg(rows, lambda d: (g(d, "sleep", "total") or 0) / 3600 or None),
-            "sleep_score": avg(rows, lambda d: g(d, "sleep", "score")),
-            "hrv": avg(rows, lambda d: g(d, "hrv", "night")),
-            "rhr": avg(rows, lambda d: d.get("rhr")),
-            "steps": avg(rows, lambda d: d.get("steps")),
-            "stress": avg(rows, lambda d: d.get("stress")),
-        }
-
-    payload = {
-        "last14": [
-            {k: d.get(k) for k in ("date", "steps", "rhr", "stress", "bbHigh", "intensity")}
-            | {"sleep_h": round((g(d, "sleep", "total") or 0) / 3600, 2), "sleep_score": g(d, "sleep", "score"),
-               "deep_h": round((g(d, "sleep", "deep") or 0) / 3600, 2), "hrv": g(d, "hrv", "night"),
-               "recovery_pct": g(d, "readiness", "score")}
-            for d in days[-14:]
-        ],
-        "avg90": summ(days[-90:]),
-        "avg365": summ(days[-365:]),
-        "recent_activities": [
-            {k: a.get(k) for k in ("start", "type", "duration", "distance", "avgHr", "load", "teAer")} for a in activities[:10]
-        ],
-    }
-    prompt = AI_PROMPT + "\n\n" + json.dumps(payload)
+    facts = analyse(days, activities, fitness)
+    prompt = COACH_SKILL + "\n\n## FACTS\n```json\n" + json.dumps(facts, ensure_ascii=False) + "\n```\nReturn only the JSON object."
     for name, fn in (("Gemini", ask_gemini), ("Claude", ask_claude)):
         try:
             text = fn(prompt)
@@ -523,7 +639,11 @@ def ai_insights(days, activities):
             continue
         out["generated"] = dt.datetime.now().astimezone().isoformat(timespec="minutes")
         out["model"] = name
-        print("  AI briefing written by %s: %s" % (name, out.get("headline")))
+        if days:
+            out["date"] = days[-1].get("date")
+        if activities:
+            out["latestActivityId"] = activities[0].get("id")
+        print("  AI insights written by %s: %s" % (name, g(out, "today", "headline")))
         return out
     return None
 
@@ -595,7 +715,7 @@ def ask_claude(prompt):
     if not key:
         return None
     r = http_json("https://api.anthropic.com/v1/messages",
-                  {"model": os.getenv("CLAUDE_MODEL", "claude-sonnet-5-5"), "max_tokens": 600,
+                  {"model": os.getenv("CLAUDE_MODEL", "claude-sonnet-5-5"), "max_tokens": 1500,
                    "messages": [{"role": "user", "content": prompt}]},
                   headers={"x-api-key": key, "anthropic-version": "2023-06-01"})
     return g(r, "content", 0, "text")
@@ -642,18 +762,25 @@ def main():
     cutoff = iso(dt.date.today() - dt.timedelta(days=HISTORY_DAYS))
     days = [by_date[k] for k in sorted(by_date) if k >= cutoff]
     add_recovery(days)
-    insights = None if args.sample else ai_insights(days, acts)
+    insights = None if args.sample else ai_insights(days, acts, fitness)
     if insights is None and prev.get("insights"):
         insights = prev["insights"]
     if args.sample:
         insights = {
-            "headline": "Recovered and ready to push",
-            "body": "Your HRV of 64 ms sits at the top of your 7-day range and resting HR is 2 bpm under your 90-day average. "
-                    "Sleep was 7h 12m with solid deep sleep, so today is a good day for intensity.",
-            "tips": ["Schedule your hardest session of the week today", "Aim for lights out by 23:00 to protect the trend",
-                     "Steps are 18% below your weekday average, add a walk after lunch"],
-            "generated": dt.datetime.now().isoformat(timespec="minutes"),
+            "today": {"headline": "Recovered and ready to push",
+                      "body": "HRV of 64 ms is 1.2 SD above your 28-day baseline and resting HR sits 2 bpm under it. Sleep was 7h 12m with 19% deep sleep.",
+                      "tips": ["Schedule your hardest session of the week today", "Lights out by 23:00 to protect the trend",
+                               "Add a walk after lunch to close the step gap"]},
+            "sleep": {"title": "Consistent, slightly short", "text": "You averaged 6h 58m this week against an 8h need, a 7h debt. Bedtime varied by only 24 min, which is excellent."},
+            "heart": {"title": "Autonomic balance is strong", "text": "Your 7-day HRV average of 58 ms sits inside your balanced range and has risen 1.4 ms per week this month."},
+            "activity": {"title": "Load in the sweet spot", "text": "ACWR is 1.12 and 78% of training time was in zones 1-2, a healthy pyramidal mix."},
+            "trends": {"title": "Fitter than last month", "text": "Resting HR is down 3% and HRV up 6% versus the previous 30 days. Nights with more sleep tend to bring higher HRV (r 0.41)."},
+            "vitalsAge": {"title": "Steady and Healthy", "text": "Your Vitals Age is 4.1 years younger than your real age. Adding one more vigorous day per week is your biggest lever."},
+            "latestActivity": {"title": "Solid tempo stimulus", "text": "Aerobic training effect 3.5 with most time in zone 3. Expect a normal recovery by tomorrow."},
+            "generated": dt.datetime.now().astimezone().isoformat(timespec="minutes"),
         }
+        fitness["history"] = [[iso(dt.date.today() - dt.timedelta(days=round(m * 30.44))), round(29.5 - (12 - m) * 0.13, 2)] for m in range(12, -1, -1)]
+        fitness["pace"] = fitness_pace(fitness["history"])
 
     data = {
         "generated": dt.datetime.now().astimezone().isoformat(timespec="minutes"),
@@ -662,6 +789,7 @@ def main():
         "days": days,
         "today": intraday,
         "activities": acts,
+        "analysis": analyse(days, acts, fitness or prev.get("fitness")),
         "fitness": fitness or prev.get("fitness"),
         "insights": insights,
     }

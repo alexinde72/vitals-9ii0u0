@@ -274,6 +274,90 @@ body.tv .rail-extra .clock{font-size:3rem;font-weight:700}
 .nogap .tips li:before{margin-right:10px}
 .nogap .legend i{margin-right:6px}
 .nogap #tip .r i{margin-right:6px}
+
+/* ---------- layout fixes ---------- */
+.kicker{flex-wrap:wrap}
+.kicker h2{white-space:nowrap}
+.seg{max-width:100%;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.seg::-webkit-scrollbar{display:none}
+.seg button{flex:none;white-space:nowrap}
+.chart svg{touch-action:pan-y}
+
+/* ---------- AI insight cards ---------- */
+.ai-mini{display:flex;gap:14px;align-items:flex-start;background:linear-gradient(135deg,rgba(144,133,233,.13),rgba(25,158,112,.07) 55%,rgba(255,255,255,.02))}
+.ai-mark{flex:none;width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-family:var(--cond);font-weight:800;font-size:.85rem;letter-spacing:.06em;color:#0a0a0b;background:linear-gradient(135deg,#9085e9,#3ff0a0)}
+.ai-mini h3{margin:1px 0 4px;font-family:var(--cond);font-size:1.3rem;font-weight:700;text-transform:uppercase;letter-spacing:.02em;line-height:1.1}
+.ai-mini p{margin:0;color:var(--ink-2);font-size:.92rem}
+.nogap .ai-mini>*+*{margin-left:14px}
+body.tv .ai-mini p{font-size:1.05rem}
+
+/* ---------- Vitals Age ---------- */
+.va-orb{position:relative;width:100%;max-width:330px;margin:0 auto}
+.va-orb:before{content:"";display:block;padding-top:100%}
+.va-orb.big{max-width:430px}
+.va-orb canvas{position:absolute;top:0;left:0;width:100%;height:100%}
+.va-center{position:absolute;top:0;left:0;right:0;bottom:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;pointer-events:none}
+.va-age{font-family:var(--cond);font-weight:700;font-size:3.6rem;line-height:1;letter-spacing:-.01em;text-shadow:0 0 18px rgba(0,0,0,.8)}
+.va-orb.big .va-age{font-size:4.8rem}
+.va-lab{font-family:var(--cond);font-weight:700;letter-spacing:.2em;font-size:.85rem;margin-top:6px}
+.va-diff{font-weight:700;font-size:.85rem;margin-top:5px}
+.pace{margin:10px 2px 4px}
+.pace-head{font-family:var(--cond);font-weight:700;letter-spacing:.16em;font-size:.82rem;color:var(--ink)}
+.pace-ends{display:flex;justify-content:space-between;font-size:.74rem;color:var(--ink-2);margin-top:6px}
+.pace-bar{position:relative;padding-top:30px}
+.pace-val{position:absolute;top:0;transform:translateX(-50%);font-family:var(--cond);font-weight:700;font-size:1.45rem;line-height:1}
+.pace-track{display:flex;justify-content:space-between;align-items:center;height:30px}
+.pace-track i{display:block;width:2px;background:var(--ink);border-radius:1px}
+.pace-mark{position:absolute;top:24px;width:3px;height:42px;margin-left:-1.5px;background:#fff;border-radius:2px;box-shadow:0 0 12px rgba(255,255,255,.8)}
+.pace-scale{display:flex;justify-content:space-between;font-size:.7rem;color:var(--muted);margin-top:8px}
+.va-note{background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-top:14px}
+.va-note b{font-family:var(--cond);font-size:1.2rem;font-weight:700}
+.va-note p{margin:4px 0 0;color:var(--ink-2);font-size:.88rem}
+body.tv .va-note p{font-size:1rem}
+
+/* ---------- activity rows + detail sheet ---------- */
+.act-g{grid-template-columns:auto 1fr auto auto}
+.chev{width:18px;height:18px;stroke:var(--muted);fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.sheet{position:fixed;top:0;left:0;right:0;bottom:0;z-index:40;background:#000;overflow-y:auto;-webkit-overflow-scrolling:touch;transform:translateY(102%);transition:transform .3s cubic-bezier(.2,.8,.2,1);visibility:hidden}
+.sheet.open{transform:none;visibility:visible}
+body.sheet-open{overflow:hidden}
+.sheet-in{max-width:1180px;margin:0 auto;padding:calc(env(safe-area-inset-top) + 6px) 16px calc(env(safe-area-inset-bottom) + 40px)}
+.sheet-bar{position:-webkit-sticky;position:sticky;top:0;z-index:3;display:flex;align-items:center;justify-content:space-between;padding:8px 0 12px;background:linear-gradient(#000 72%,rgba(0,0,0,0))}
+.back{width:42px;height:42px;border-radius:50%;background:var(--surface-2);display:grid;place-items:center;outline:none}
+.back svg{width:20px;height:20px;stroke:var(--ink);fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.sheet-title{font-family:var(--cond);font-weight:700;letter-spacing:.18em;font-size:.85rem;color:var(--ink-2)}
+.act-head{display:flex;align-items:center;margin:2px 2px 16px}
+.act-head .ty{flex:none;width:56px;height:56px;border-radius:15px;display:grid;place-items:center;font-family:var(--cond);font-size:.85rem;font-weight:800;letter-spacing:.08em;color:#0a0a0b;margin-right:14px}
+.act-head h1{font-size:1.9rem;line-height:1.05;margin:0}
+.act-head .sub{margin-top:4px}
+.hero-stats{display:grid;grid-template-columns:repeat(3,1fr);grid-gap:16px 10px}
+@media (min-width:760px){.hero-stats{grid-template-columns:repeat(4,1fr)}}
+.hero-stats .l{font-size:.66rem;color:var(--muted);font-weight:800;letter-spacing:.12em;text-transform:uppercase}
+.hero-stats .v{font-family:var(--cond);font-size:2rem;font-weight:700;line-height:1.05;margin-top:3px}
+.hero-stats .v small{font-size:.85rem;color:var(--muted);margin-left:3px;font-weight:600;text-transform:uppercase}
+.route{position:relative}
+.route svg{display:block;width:100%}
+.grad-legend{display:flex;align-items:center;font-size:.72rem;color:var(--ink-2);margin-top:8px}
+.grad-legend i{display:inline-block;width:110px;height:6px;border-radius:3px;margin:0 8px;background:linear-gradient(90deg,#3987e5,#199e70,#fab219,#e66767)}
+table.splits{width:100%;border-collapse:collapse;font-size:.88rem}
+table.splits th{font-size:.64rem;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;text-align:right;font-weight:800;padding:0 0 8px}
+table.splits th:first-child,table.splits td:first-child{text-align:left;width:40px}
+table.splits td{padding:7px 0;border-top:1px solid var(--grid);text-align:right;font-weight:700}
+table.splits td.bar-cell{width:38%;padding-left:12px}
+table.splits td.bar-cell i{display:block;height:8px;border-radius:4px;background:var(--steps)}
+.te{margin:4px 0 14px}
+.te .between{font-size:.82rem;margin-bottom:6px}
+.te-bar{display:flex;height:10px}
+.te-bar i{flex:1;border-radius:3px;background:var(--surface-3);margin-right:3px}
+.te-bar i:last-child{margin-right:0}
+.chart-head{display:flex;justify-content:space-between;align-items:baseline;margin:14px 0 4px;font-size:.78rem;color:var(--ink-2)}
+.chart-head b{font-family:var(--cond);font-size:1rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink)}
+.readout{font-size:.8rem;color:var(--ink-2);min-height:1.2em}
+body.tv .sheet-in{max-width:none;padding:2rem 2.6rem 3rem}
+body.tv .sheet{scrollbar-width:none}
+body.tv .sheet::-webkit-scrollbar{display:none}
+body.tv .back:focus{box-shadow:0 0 0 3px var(--ink)}
+body.tv .hero-stats{grid-template-columns:repeat(8,1fr)}
 </style>
 </head>
 <body>
@@ -385,6 +469,7 @@ const base = (fn, n=30) => mean(lastN(n, HIST).map(fn));
 /* ============================================================ tooltip */
 const tip = $("#tip");
 function showTip(html, x, y){
+  clearTimeout(tipTimer);
   tip.innerHTML = html; tip.style.opacity = 1;
   const r = tip.getBoundingClientRect();
   let left = x + 14, top = y - r.height - 12;
@@ -392,7 +477,17 @@ function showTip(html, x, y){
   if (top < 8) top = y + 16;
   tip.style.left = left + "px"; tip.style.top = top + "px";
 }
-function hideTip(){ tip.style.opacity = 0; }
+let tipTimer = null;
+function hideTip(){
+  clearTimeout(tipTimer); tip.style.opacity = 0;
+  document.querySelectorAll(".chart .hov").forEach(h => { h.style.display = "none"; });
+  document.querySelectorAll(".chart .hl").forEach(h => h.setAttribute("opacity", 0));
+  if (window.__onHideTip) window.__onHideTip();
+}
+// Touch: keep the readout briefly after lifting the finger, then clear it so it never gets stuck
+function tipRelease(e){ if (e.pointerType !== "mouse") { clearTimeout(tipTimer); tipTimer = setTimeout(hideTip, 1500); } }
+addEventListener("scroll", hideTip, {passive: true});
+document.addEventListener("pointerdown", e => { if (!e.target.closest(".chart, .heat")) hideTip(); }, {passive: true});
 const tipRow = (color, label, val) => `<div class="r"><span><i style="background:${color}"></i>${label}</span><strong>${val}</strong></div>`;
 
 /* ============================================================ chart kit */
@@ -442,7 +537,7 @@ function lineChart(el, o){
   const xv = xs.map(x => x instanceof Date ? x.getTime() : x);
   const x0 = o.xMin ?? xv[0], x1 = o.xMax ?? xv[n-1];
   const X = v => m.l + (x1 === x0 ? 0.5 : (v - x0) / (x1 - x0)) * (w - m.l - m.r);
-  const Y = v => m.t + (1 - (v - lo) / (hi - lo)) * (h - m.t - m.b);
+  const Y = o.invert ? (v => m.t + ((v - lo) / (hi - lo)) * (h - m.t - m.b)) : (v => m.t + (1 - (v - lo) / (hi - lo)) * (h - m.t - m.b));
   const yFmt = o.yFmt || (v => fNum(v));
   let g = "";
   ticks.forEach(t => { g += `<line x1="${m.l}" x2="${w-m.r}" y1="${Y(t)}" y2="${Y(t)}" stroke="${C.grid}"/><text x="${m.l-6}" y="${Y(t)+3.5}" text-anchor="end">${yFmt(t)}</text>`; });
@@ -466,7 +561,7 @@ function lineChart(el, o){
     let d = "", seg = false;
     sr.ys.forEach((v, i) => {
       if (v == null) { seg = false; return; }
-      d += (seg ? "L" : "M") + X(xv[i]).toFixed(1) + "," + Y(v).toFixed(1); seg = true; pts.push([X(xv[i]), Y(v)]);
+      const yc = Y(clamp(v, lo, hi)); d += (seg ? "L" : "M") + X(xv[i]).toFixed(1) + "," + yc.toFixed(1); seg = true; pts.push([X(xv[i]), yc]);
     });
     if (sr.area && pts.length) {
       const id = "g" + Math.random().toString(36).slice(2,8);
@@ -492,9 +587,11 @@ function lineChart(el, o){
     hov.style.display = ""; line.setAttribute("x1", X(xv[bi])); line.setAttribute("x2", X(xv[bi]));
     o.series.forEach((sr, k) => { const yv = sr.ys[bi]; dots[k].style.display = yv == null ? "none" : ""; if (yv != null) { dots[k].setAttribute("cx", X(xv[bi])); dots[k].setAttribute("cy", Y(yv)); } });
     showTip(o.tip(bi), e.clientX, e.clientY);
+    if (o.onIndex) o.onIndex(bi);
   };
   svg.addEventListener("pointermove", move); svg.addEventListener("pointerdown", move);
-  svg.addEventListener("pointerleave", () => { hov.style.display = "none"; hideTip(); });
+  svg.addEventListener("pointerleave", e => { if (e.pointerType === "mouse") hideTip(); });
+  svg.addEventListener("pointerup", tipRelease); svg.addEventListener("pointercancel", hideTip);
 }
 
 /**
@@ -544,7 +641,8 @@ function barChart(el, o){
     showTip(o.tip(i), e.clientX, e.clientY);
   };
   svg.addEventListener("pointermove", move); svg.addEventListener("pointerdown", move);
-  svg.addEventListener("pointerleave", () => { hl.setAttribute("opacity", 0); hideTip(); });
+  svg.addEventListener("pointerleave", e => { if (e.pointerType === "mouse") hideTip(); });
+  svg.addEventListener("pointerup", tipRelease); svg.addEventListener("pointercancel", hideTip);
 }
 
 function ring(value, max, color, label, status, opts = {}){
@@ -619,7 +717,8 @@ function heatmap(el, fn, color, fmt){
   if (TV) return;
   const svg = el.querySelector("svg");
   svg.addEventListener("pointermove", e => { const i = e.target.dataset?.i; if (i == null) { hideTip(); return; } const d = days[+i]; showTip(`<b>${fDay(pd(d.date))}</b>${fmt(fn(d))}`, e.clientX, e.clientY); });
-  svg.addEventListener("pointerleave", hideTip);
+  svg.addEventListener("pointerleave", e => { if (e.pointerType === "mouse") hideTip(); });
+  svg.addEventListener("pointerup", tipRelease);
 }
 
 /* ============================================================ insights (rule-based) */
@@ -720,18 +819,8 @@ function actRow(a, i){
       <div>${fHM(a.duration)}<small>time</small></div>
       ${a.avgHr ? `<div>${a.avgHr}<small>avg hr</small></div>` : ""}
     </div>
-    <div class="act-detail">
-      <div class="stats c4">
-        ${pace && a.distance > 50 ? `<div class="stat"><div class="l">Pace</div><div class="v">${pace}</div></div>` : ""}
-        <div class="stat"><div class="l">Calories</div><div class="v">${fNum(a.kcal)}<small>kcal</small></div></div>
-        ${a.elevation ? `<div class="stat"><div class="l">Ascent</div><div class="v">${fNum(a.elevation)}<small>m</small></div></div>` : ""}
-        ${a.maxHr ? `<div class="stat"><div class="l">Max HR</div><div class="v">${a.maxHr}<small>bpm</small></div></div>` : ""}
-        ${a.teAer != null ? `<div class="stat"><div class="l">Training effect</div><div class="v">${a.teAer}<small>aer</small> ${a.teAna ?? 0}<small>ana</small></div></div>` : ""}
-        ${a.load ? `<div class="stat"><div class="l">Load</div><div class="v">${a.load}</div></div>` : ""}
-      </div>
-      ${zt ? `<div class="sub" style="margin-top:12px">Time in heart rate zones</div><div class="zones">${a.zones.map((z,k)=>z?`<i style="flex:${z};background:${zoneCols[k]}"></i>`:"").join("")}</div>
-      <div class="legend">${a.zones.map((z,k)=>`<span><i style="background:${zoneCols[k]}"></i>Z${k+1} ${fDur(z)}</span>`).join("")}</div>` : ""}
-    </div></div></button>`;
+    <svg class="chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
+</div></button>`;
 }
 
 /* ============================================================ views */
@@ -739,7 +828,7 @@ const V = {};
 
 V.today = () => {
   const t = TODAY, sl = t.sleep, rd = t.readiness?.score ?? null;
-  const ai = DATA.insights, rules = ruleInsights();
+  const AI = DATA.insights, ai = AI && (AI.today || (AI.headline ? AI : null)), rules = ruleInsights();
   const bbNow = DATA.today?.bb?.length ? DATA.today.bb[DATA.today.bb.length-1][1] : t.bbHigh;
   const goal = t.stepGoal || 10000;
   const lastAct = (DATA.activities || [])[0];
@@ -753,9 +842,9 @@ V.today = () => {
       </div>
     </section>
     <section class="card tv-7 ai" tabindex="0">
-      <div class="kicker"><h2><span class="dot" style="background:${C.ink}"></span>Daily briefing</h2><span class="sub">${ai?.generated ? "AI · " + fClock(new Date(ai.generated)) : ""}</span></div>
+      <div class="kicker"><h2><span class="dot" style="background:${C.ink}"></span>Daily briefing</h2><span class="sub">${AI?.generated ? "AI · " + fClock(new Date(AI.generated)) : ""}</span></div>
       ${ai ? `<h3>${esc(ai.headline)}</h3><p>${esc(ai.body)}</p><ul class="tips">${(ai.tips||[]).slice(0,3).map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`
-           : `<p class="sub">Add an Anthropic API key to the sync job to get a written daily briefing. Rule-based insights are below.</p>`}
+           : `<p class="sub">Add a Gemini or Anthropic API key to the sync job to get a written daily briefing. Rule-based insights are below.</p>`}
     </section>
     <div class="tiles span-3 tv-12">
       ${tile("Steps", C.steps, `${fNum(t.steps)}`, "", `<div class="bar"><i style="width:${clamp((t.steps||0)/goal*100,0,100)}%;background:${C.steps}"></i></div><span class="sub">${Math.round((t.steps||0)/goal*100)}% of ${fNum(goal)}</span>`)}
@@ -780,7 +869,7 @@ V.today = () => {
       <div class="stat"><div class="l">Intensity</div><div class="v">${t.intensity ?? "–"}<small>min</small></div></div>
       <div class="stat"><div class="l">Floors</div><div class="v">${t.floors ?? "–"}</div></div>
       <div class="stat"><div class="l">Respiration</div><div class="v">${t.resp ?? "–"}<small>brpm</small></div></div>
-      <div class="stat"><div class="l">Fitness age</div><div class="v">${DATA.fitness?.age ?? "–"}</div></div></div>`)}
+      <div class="stat"><div class="l">Vitals Age</div><div class="v">${DATA.fitness?.age != null ? DATA.fitness.age.toFixed(1) : "–"}</div></div></div>`)}
   </div>`;
   const mount = () => {
     const td = DATA.today || {};
@@ -827,6 +916,7 @@ V.sleep = () => {
   const html = `
   <div class="toolbar"><h2>Sleep</h2>${rangeSeg()}</div>
   <div class="grid">
+    ${aiBlock("sleep")}
     ${card("tv-7 span-2", "Last night", C.sleep, sl ? `<span class="sub">${fClock(new Date(sl.start))} – ${fClock(new Date(sl.end))}</span>` : "", sl ? `
       <div class="between"><div><div class="big">${fDur(sl.total)}</div><div class="sub" style="margin-top:4px">${deltaHTML(sl.total/3600, base(M.sleepH), {unit:" h", digits:1})}</div></div>
       <div style="text-align:right"><div class="big">${sl.score ?? "–"}<small>score</small></div><div class="sub" style="margin-top:4px">${deltaHTML(sl.score, base(M.sleepScore))}</div></div></div>
@@ -880,6 +970,7 @@ V.heart = () => {
   const html = `
   <div class="toolbar"><h2>Heart & recovery</h2>${rangeSeg()}</div>
   <div class="grid">
+    ${aiBlock("heart")}
     ${card("tv-6", "Resting heart rate", C.heart, `<span class="sub">${t.rhr ?? "–"} bpm today</span>`, `
       <div class="between" style="margin-bottom:6px"><div class="mid">${fNum(mean(days.map(M.rhr)),1)}<small>bpm avg</small></div>${deltaHTML(t.rhr, base(M.rhr), {better:"down", unit:" bpm"})}</div>
       <div class="chart" id="c-rhr"></div><div class="legend"><span><i class="ln" style="background:${C.heart}"></i>7-day average</span><span><i style="background:${C.heart};opacity:.5;border-radius:50%"></i>Daily</span></div>`)}
@@ -887,7 +978,7 @@ V.heart = () => {
       <div class="between" style="margin-bottom:6px"><div class="mid">${t.hrv?.night ?? "–"}<small>ms last night</small></div>${deltaHTML(t.hrv?.night, base(M.hrv), {unit:" ms"})}</div>
       <div class="chart" id="c-hrv"></div><div class="legend"><span><i class="ln" style="background:${C.hrv}"></i>7-day average</span><span><i style="background:${C.hrv};opacity:.5;border-radius:50%"></i>Nightly</span><span><i style="background:${C.ink};opacity:.18"></i>Balanced range</span></div>`)}
     ${card("tv-8 span-2", "Heart rate today", C.heart, `<span class="sub">min ${t.minHr ?? "–"} · max ${t.maxHr ?? "–"}</span>`, `<div class="chart" id="c-hr2"></div>`)}
-    ${vo2.length ? card("tv-4", "VO₂ max", C.vo2, `<span class="sub">ml/kg/min</span>`, `<div class="between"><div class="big">${vNow ?? "–"}</div>${vo2.length > 30 ? deltaHTML(vNow, vo2[Math.max(0, vo2.length-91)], {digits:1}).replace("vs 30d","vs 90d") : ""}</div><div class="chart" id="c-vo2" style="margin-top:8px"></div>`) : fitnessCard()}
+    ${vo2.length ? card("tv-4", "VO₂ max", C.vo2, `<span class="sub">ml/kg/min</span>`, `<div class="between"><div class="big">${vNow ?? "–"}</div>${vo2.length > 30 ? deltaHTML(vNow, vo2[Math.max(0, vo2.length-91)], {digits:1}).replace("vs 30d","vs 90d") : ""}</div><div class="chart" id="c-vo2" style="margin-top:8px"></div>`) : vitalsAgeCard("tv-4", false)}
     ${card("tv-6", "Stress", C.stress, `<span class="sub">daily average</span>`, `<div class="chart" id="c-stress"></div>`)}
     ${card("tv-6", "Body Battery range", C.battery, `<span class="sub">daily low → high</span>`, `<div class="chart" id="c-bbr"></div>`)}
   </div>`;
@@ -925,6 +1016,7 @@ V.activity = () => {
   const html = `
   <div class="toolbar"><h2>Activity</h2>${rangeSeg()}</div>
   <div class="grid">
+    ${aiBlock("activity")}
     ${card("tv-8 span-2", "Steps", C.steps, `<span class="sub">${state.range > 90 ? "weekly avg per day" : "daily"}</span>`, `
       <div class="stats c4" style="margin-bottom:12px">
         <div class="stat"><div class="l">Daily avg</div><div class="v">${fNum(mean(days.map(M.steps)))}</div></div>
@@ -938,6 +1030,7 @@ V.activity = () => {
       <div class="stat"><div class="l">Distance</div><div class="v">${fKm(inRange.reduce((s,a)=>s+(a.distance||0),0))}<small>km</small></div></div>
       <div class="stat"><div class="l">Calories</div><div class="v">${fNum(inRange.reduce((s,a)=>s+(a.kcal||0),0))}</div></div></div>
       ${typeRows.map(([k,v]) => `<div style="margin:8px 0"><div class="between" style="font-size:.8rem;margin-bottom:5px"><span>${k}</span><span class="sub">${fDur(v)}</span></div><div class="bar"><i style="width:${v/typeMax*100}%;background:${GROUP_COLOR[k]}"></i></div></div>`).join("") || `<div class="empty">No workouts in range</div>`}`)}
+    ${loadCard()}
     ${card("tv-6", "Weekly training load", C.stress, `<span class="sub">last 12 weeks</span>`, `<div class="chart" id="c-load"></div>`)}
     ${card("tv-6", "Intensity minutes", C.hrv, `<span class="sub">weekly · goal 150</span>`, `<div class="chart" id="c-int"></div>`)}
     ${card("tv-12 span-3", "Recent activities", C.ink2, `<span class="sub">${acts.length} synced</span>`, `<div class="acts" id="acts">${acts.slice(0, TV ? 8 : 20).map(actRow).join("")}</div>`)}
@@ -987,9 +1080,11 @@ V.trends = () => {
   const html = `
   <div class="toolbar"><h2>Trends</h2><span class="sub">past 12 months</span></div>
   <div class="grid">
-    ${card("tv-5", "Last 30 days vs previous 30", C.ink2, "", `<table class="cmp"><thead><tr><th></th><th>Now</th><th>Before</th><th>Change</th></tr></thead><tbody>
+    ${aiBlock("trends")}
+    ${vitalsAgeCard("tv-5", true)}
+    ${card("tv-7 span-2", "Last 30 days vs previous 30", C.ink2, "", `<table class="cmp"><thead><tr><th></th><th>Now</th><th>Before</th><th>Change</th></tr></thead><tbody>
       ${rows.map(([l, fn, f, b]) => `<tr><td>${l}</td><td>${cell(fn, now, f)}</td><td style="color:var(--muted)">${cell(fn, prev, f)}</td><td>${chg(fn, b)}</td></tr>`).join("")}</tbody></table>`)}
-    ${card("tv-7 span-2", "Monthly averages", C.ink2, `<div class="seg" id="mseg">${[["sleep","Sleep"],["hrv","HRV"],["rhr","RHR"],["steps","Steps"],["vo2","VO₂"],["ready","Recovery"]].filter(([k]) => k !== "vo2" || HIST.some(d => d.vo2 != null)).map(([k,l])=>`<button data-month="${k}" class="${(state.month||"sleep")===k?"on":""}">${l}</button>`).join("")}</div>`, `<div class="chart" id="c-month"></div>`)}
+    ${card("tv-12 span-3", "Monthly averages", C.ink2, `<div class="seg" id="mseg">${[["sleep","Sleep"],["hrv","HRV"],["rhr","RHR"],["steps","Steps"],["vo2","VO₂"],["ready","Recovery"]].filter(([k]) => k !== "vo2" || HIST.some(d => d.vo2 != null)).map(([k,l])=>`<button data-month="${k}" class="${(state.month||"sleep")===k?"on":""}">${l}</button>`).join("")}</div>`, `<div class="chart" id="c-month"></div>`)}
     ${card("tv-12 span-3", "Year at a glance", C.ink2, `<div class="seg">${Object.entries(heatOpts).map(([k,v])=>`<button data-heat="${k}" class="${state.heat===k?"on":""}">${v[0]}</button>`).join("")}</div>`, `<div class="heat" id="c-heat"></div>`)}
     ${card("tv-12 span-3", "Personal bests · 12 months", C.ink2, "", `<div class="records">
       ${bSteps ? rec("Most steps", fNum(bSteps.steps), fDay(pd(bSteps.date))) : ""}
@@ -1012,6 +1107,295 @@ V.trends = () => {
   };
   return {html, mount};
 };
+
+
+/* ============================================================ AI insight card */
+function aiBlock(key){
+  const ai = DATA.insights && DATA.insights[key];
+  if (!ai || !ai.text) return "";
+  return `<section class="card ai-mini span-3 tv-12" tabindex="0"><div class="ai-mark">AI</div><div><h3>${esc(ai.title || "")}</h3><p>${esc(ai.text)}</p></div></section>`;
+}
+
+/* ============================================================ training load analysis */
+function loadCard(){
+  const t = DATA.analysis && DATA.analysis.training; if (!t) return "";
+  const acwr = t.acwr, zone = acwr == null ? null : acwr > 1.5 ? ["Spike", C.bad] : acwr > 1.3 ? ["High", C.warn] : acwr >= 0.8 ? ["Sweet spot", C.good] : ["Low", C.serious];
+  const dist = t.intensity_distribution_28d || {};
+  const seg = (v, c, l) => v ? `<i style="flex:${v};background:${c}" title="${l}"></i>` : "";
+  return card("tv-6", "Load analysis", C.stress, `<span class="sub">acute vs chronic</span>`, `
+    <div class="stats c3">
+      <div class="stat"><div class="l">ACWR</div><div class="v">${acwr ?? "–"}</div>${zone ? `<span class="delta"><i style="background:${zone[1]}"></i>${zone[0]}</span>` : ""}</div>
+      <div class="stat"><div class="l">Load 7d</div><div class="v">${t.load_7d}<small>/ ${t.load_28d_weekly_avg} avg</small></div></div>
+      <div class="stat"><div class="l">Monotony</div><div class="v">${t.monotony_7d ?? "–"}</div><span class="sub">${t.monotony_7d > 2 ? "too uniform" : "varied"}</span></div>
+    </div>
+    ${dist.model ? `<div class="sub" style="margin:16px 0 6px">Intensity mix · 28 days · <b style="color:var(--ink)">${esc(dist.model)}</b></div>
+    <div class="zones" style="height:12px">${seg(dist.z1_2_pct, "#3987e5", "Z1-2")}${seg(dist.z3_pct, "#199e70", "Z3")}${seg(dist.z4_5_pct, "#e66767", "Z4-5")}</div>
+    <div class="legend"><span><i style="background:#3987e5"></i>Easy Z1–2 ${dist.z1_2_pct}%</span><span><i style="background:#199e70"></i>Tempo Z3 ${dist.z3_pct}%</span><span><i style="background:#e66767"></i>Hard Z4–5 ${dist.z4_5_pct}%</span></div>` : ""}`);
+}
+
+/* ============================================================ Vitals Age (animated sphere + pace of aging) */
+function vaPalette(){
+  const f = DATA.fitness || {}, diff = f.chrono ? f.chrono - f.age : 0;
+  return diff >= 1.5 ? ["#0b7d43", "#2fe48f", "#c9ffe5"] : diff > -1.5 ? ["#7a6a0c", "#f0cf3f", "#fff3bf"] : ["#8a3510", "#ff8a3d", "#ffd9c4"];
+}
+function paceBar(p){
+  const lo = -1, hi = 3, n = 61, pos = clamp((p - lo) / (hi - lo), 0, 1);
+  let ticks = "";
+  for (let i = 0; i < n; i++) {
+    const x = i / (n - 1), dd = x - pos;
+    const op = 0.16 + 0.7 * Math.exp(-dd * dd / 0.006), h = 12 + 14 * Math.exp(-dd * dd / 0.003);
+    ticks += `<i style="height:${h.toFixed(1)}px;opacity:${op.toFixed(2)}"></i>`;
+  }
+  const label = p < 0 ? "Reversing" : p < 0.9 ? "Slow" : p <= 1.2 ? "Steady" : p <= 2 ? "Fast" : "Very fast";
+  return `<div class="pace"><div class="between"><span class="pace-head">Pace of aging</span><span class="sub">${label} · last 6 months</span></div>
+    <div class="pace-ends"><span>◀ Slower</span><span>Faster ▶</span></div>
+    <div class="pace-bar"><div class="pace-val" style="left:${(clamp(pos, 0.07, 0.93) * 100).toFixed(1)}%">${p.toFixed(1)}x</div>
+      <div class="pace-track">${ticks}</div><div class="pace-mark" style="left:${(pos * 100).toFixed(1)}%"></div></div>
+    <div class="pace-scale"><span>-1.0x</span><span>1.0x</span><span>3.0x</span></div></div>`;
+}
+function vitalsAgeCard(cls, big){
+  const f = DATA.fitness; if (!f || f.age == null) return "";
+  const diff = f.chrono ? f.chrono - f.age : null, col = vaPalette()[1];
+  const ai = DATA.insights && DATA.insights.vitalsAge;
+  const h = f.history || [];
+  const bar = (v, tgt, lab, unit) => v == null || !tgt ? "" : `<div style="margin:10px 0 0"><div class="between" style="font-size:.8rem;margin-bottom:5px"><span>${lab}</span><span class="sub">${v} / ${tgt}${unit}</span></div><div class="bar"><i style="width:${clamp(v / tgt * 100, 0, 100)}%;background:${col}"></i></div></div>`;
+  return `<section class="card ${cls}" tabindex="0">
+    <div class="kicker"><h2><span class="dot" style="background:${col}"></span>Vitals Age</h2><span class="sub">${f.chrono ? "actual age " + f.chrono : ""}</span></div>
+    <div class="va-orb ${big ? "big" : ""}"><canvas data-va="1"></canvas>
+      <div class="va-center"><div class="va-age">${f.age.toFixed(1)}</div><div class="va-lab">VITALS AGE</div>
+      ${diff != null ? `<div class="va-diff" style="color:${col}">${Math.abs(diff).toFixed(1)} years ${diff >= 0 ? "younger" : "older"}</div>` : ""}</div></div>
+    ${f.pace != null ? paceBar(f.pace) : `<div class="sub" style="text-align:center;margin-top:8px">Pace of aging needs a few months of history</div>`}
+    ${ai && ai.text ? `<div class="va-note"><b>${esc(ai.title || "")}</b><p>${esc(ai.text)}</p></div>` : ""}
+    ${h.length > 2 ? `<div class="sub" style="margin:14px 0 2px">12 months: ${h[0][1].toFixed(1)} → ${h[h.length - 1][1].toFixed(1)}</div><div class="spark" data-vaspark="1" style="height:36px"></div>` : ""}
+    ${bar(f.vigorousDays, f.vigorousDaysTarget, "Vigorous days / week", "")}${bar(f.vigorousMin, f.vigorousMinTarget, "Vigorous minutes / week", " min")}
+  </section>`;
+}
+function mountSpheres(){
+  document.querySelectorAll("canvas[data-va]").forEach(cv => sphere(cv, vaPalette()));
+  const h = (DATA.fitness && DATA.fitness.history) || [];
+  document.querySelectorAll("[data-vaspark]").forEach(el => spark(el, h.map(p => p[1]), vaPalette()[1]));
+}
+function sphere(cv, pal){
+  const box = cv.parentElement, W = box.clientWidth, H = box.clientHeight || W;
+  if (!W) return;
+  const dpr = Math.min(2, window.devicePixelRatio || 1);
+  cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+  const ctx = cv.getContext("2d"); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const R = Math.min(W, H) * 0.44, cx = W / 2, cy = H / 2, N = TV ? 900 : 1600;
+  const P = [];
+  for (let i = 0; i < N; i++) {
+    const shell = Math.pow(Math.random(), 0.35);                       // denser towards the outer shell
+    P.push({ th: Math.random() * 6.2832, ph: Math.acos(1 - 2 * Math.random()), r: R * (0.7 + 0.3 * shell),
+      sp: 0.0014 + Math.random() * 0.0040, wob: Math.random() * 6.28, s: 0.6 + Math.random() * 1.7,
+      c: Math.random() < 0.09 ? 2 : (Math.random() < 0.55 ? 1 : 0) });
+  }
+  const tilt = 0.38, ct = Math.cos(tilt), st = Math.sin(tilt);
+  let reduce = false; try { reduce = matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (e) {}
+  let last = 0, t = 0;
+  const halo = ctx.createRadialGradient(cx, cy, R * 0.55, cx, cy, Math.min(W, H) / 2);
+  halo.addColorStop(0, hexA(pal[1], 0)); halo.addColorStop(0.55, hexA(pal[1], 0.26)); halo.addColorStop(0.72, hexA(pal[1], 0.12)); halo.addColorStop(1, hexA(pal[1], 0));
+  const core = ctx.createRadialGradient(cx, cy, 0, cx, cy, R * 0.8);
+  core.addColorStop(0, "rgba(0,0,0,0.9)"); core.addColorStop(0.55, "rgba(0,0,0,0.72)"); core.addColorStop(1, "rgba(0,0,0,0)");
+  function frame(ts){
+    if (!cv.isConnected) return;
+    if (TV && ts - last < 33) { requestAnimationFrame(frame); return; }   // ~30 fps on TVs
+    last = ts; t++;
+    ctx.globalCompositeOperation = "source-over"; ctx.globalAlpha = 1;
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = halo; ctx.fillRect(0, 0, W, H);
+    ctx.globalCompositeOperation = "lighter";
+    for (let i = 0; i < N; i++) {
+      const p = P[i];
+      if (!reduce) p.th += p.sp;
+      const ph = p.ph + Math.sin(t * 0.012 + p.wob) * 0.05;
+      const sp = Math.sin(ph), x = p.r * sp * Math.cos(p.th), y = p.r * Math.cos(ph), z = p.r * sp * Math.sin(p.th);
+      const y2 = y * ct - z * st, z2 = y * st + z * ct, k = 1 + z2 / (R * 5), depth = (z2 / R + 1) / 2;
+      ctx.globalAlpha = Math.min(1, 0.18 + 0.95 * depth * Math.pow(p.r / R, 2));
+      ctx.fillStyle = pal[p.c];
+      ctx.beginPath(); ctx.arc(cx + x * k, cy + y2 * k, p.s * k * (0.55 + 0.65 * depth), 0, 6.2832); ctx.fill();
+    }
+    ctx.globalCompositeOperation = "source-over"; ctx.globalAlpha = 1;
+    ctx.fillStyle = core; ctx.beginPath(); ctx.arc(cx, cy, R * 0.8, 0, 6.2832); ctx.fill();
+    if (!reduce || t < 2) requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+}
+
+/* ============================================================ activity detail sheet */
+const sheet = document.createElement("div"); sheet.id = "sheet"; sheet.className = "sheet"; document.body.appendChild(sheet);
+sheet.addEventListener("scroll", () => { if (tip.style.opacity !== "0") { tip.style.opacity = 0; } }, {passive: true});
+let sheetFrom = null;
+const sheetOpen = () => sheet.classList.contains("open");
+const isFoot = t => /run|hik|walk/.test(t || ""), isSwim = t => /swim/.test(t || "");
+function paceParts(spd, type){
+  if (!spd) return ["–", ""];
+  if (isFoot(type) || isSwim(type)) { const sec = (isSwim(type) ? 100 : 1000) / spd; return [`${Math.floor(sec / 60)}:${String(Math.round(sec % 60)).padStart(2, "0")}`, isSwim(type) ? "/100m" : "/km"]; }
+  return [(spd * 3.6).toFixed(1), "km/h"];
+}
+const secPace = s => `${Math.floor(s / 60)}:${String(Math.round(s % 60)).padStart(2, "0")}`;
+const ZONE_COLS = ["#5c5c63", "#3987e5", "#199e70", "#c98500", "#d03b3b"];
+
+async function openActivity(id){
+  const a = (DATA.activities || []).find(x => x.id === id); if (!a) return;
+  if (ambientTimer) stopAmbient();
+  sheetFrom = document.activeElement; hideTip();
+  sheet.dataset.id = id;
+  sheet.innerHTML = sheetHTML(a, null, true);
+  sheet.scrollTop = 0;
+  sheet.classList.add("open"); document.body.classList.add("sheet-open");
+  if (TV) requestAnimationFrame(() => { const b = $("#sheet .back"); b && b.focus(); });
+  let det = null;
+  try { const r = await fetch("acts/" + id + ".json"); if (r.ok) det = await r.json(); } catch (e) {}
+  if (!sheetOpen() || +sheet.dataset.id !== id) return;
+  sheet.innerHTML = sheetHTML(a, det, false);
+  requestAnimationFrame(() => { mountSheet(a, det); if (TV) { const b = $("#sheet .back"); b && b.focus(); } });
+}
+function closeActivity(){
+  sheet.classList.remove("open"); document.body.classList.remove("sheet-open"); hideTip();
+  window.__onHideTip = null;
+  setTimeout(() => { if (!sheetOpen()) sheet.innerHTML = ""; }, 320);
+  if (sheetFrom && sheetFrom.isConnected) sheetFrom.focus({preventScroll: true});
+}
+function sheetHTML(a, det, loading){
+  const info = actInfo(a.type), st = new Date(a.start), s = (det && det.summary) || {};
+  const dist = s.distance != null ? s.distance : a.distance, dur = s.duration != null ? s.duration : a.duration;
+  const spd = s.averageMovingSpeed || s.averageSpeed || a.avgSpeed, hasDist = dist > 50;
+  const AI = DATA.insights, ai = AI && AI.latestActivity && AI.latestActivityId === a.id ? AI.latestActivity : null;
+  const pp = paceParts(spd, a.type);
+  const hero = [
+    hasDist ? ["Distance", fKm(dist), "km"] : null,
+    ["Time", fHM(dur), ""],
+    hasDist && spd ? [isFoot(a.type) || isSwim(a.type) ? "Avg pace" : "Avg speed", pp[0], pp[1]] : null,
+    (s.averageHR || a.avgHr) ? ["Avg HR", Math.round(s.averageHR || a.avgHr), "bpm"] : null,
+    (s.maxHR || a.maxHr) ? ["Max HR", Math.round(s.maxHR || a.maxHr), "bpm"] : null,
+    ["Calories", fNum(s.calories != null ? s.calories : a.kcal), "kcal"],
+    (s.activityTrainingLoad || a.load) ? ["Load", Math.round(s.activityTrainingLoad || a.load), ""] : null,
+    (s.elevationGain || a.elevation) ? ["Ascent", fNum(s.elevationGain || a.elevation), "m"] : null,
+  ].filter(Boolean);
+  const zones = (det && det.zones) || a.zones, zt = (zones || []).reduce((x, y) => x + (y || 0), 0);
+  const te = s.trainingEffect != null ? s.trainingEffect : a.teAer, tea = s.anaerobicTrainingEffect != null ? s.anaerobicTrainingEffect : a.teAna;
+  const teBar = (v, col) => `<div class="te-bar">${[1, 2, 3, 4, 5].map(k => `<i style="${v >= k - 0.5 ? `background:${col};opacity:${0.45 + 0.11 * k}` : ""}"></i>`).join("")}</div>`;
+  const msg = m => humanize(String(m || "").replace(/_\d+$/, ""));
+  const ser = det && det.series;
+  const charts = [];
+  if (ser) {
+    if (ser.hr) charts.push(["hr", "Heart rate", "bpm"]);
+    if (ser.speed && hasDist) charts.push(["speed", isFoot(a.type) ? "Pace" : isSwim(a.type) ? "Pace" : "Speed", pp[1]]);
+    if (ser.elev) charts.push(["elev", "Elevation", "m"]);
+    if (ser.cad && ser.cad.some(v => v)) charts.push(["cad", "Cadence", isFoot(a.type) ? "spm" : "rpm"]);
+    if (ser.power && ser.power.some(v => v)) charts.push(["power", "Power", "W"]);
+    if (ser.resp && ser.resp.some(v => v)) charts.push(["resp", "Respiration", "brpm"]);
+    if (ser.stamina && ser.stamina.some(v => v != null)) charts.push(["stamina", "Stamina", "%"]);
+  }
+  const form = [
+    s.averageRunCadence ? ["Cadence", Math.round(s.averageRunCadence), "spm"] : s.averageBikeCadence ? ["Cadence", Math.round(s.averageBikeCadence), "rpm"] : null,
+    s.strideLength ? ["Stride", (s.strideLength / 100).toFixed(2), "m"] : null,
+    s.groundContactTime ? ["Ground contact", Math.round(s.groundContactTime), "ms"] : null,
+    s.verticalOscillation ? ["Vert. oscillation", s.verticalOscillation.toFixed(1), "cm"] : null,
+    s.verticalRatio ? ["Vert. ratio", s.verticalRatio.toFixed(1), "%"] : null,
+    s.averagePower ? ["Avg power", Math.round(s.averagePower), "W"] : null,
+    s.normalizedPower ? ["Norm. power", Math.round(s.normalizedPower), "W"] : null,
+    s.avgRespirationRate ? ["Respiration", Math.round(s.avgRespirationRate), "brpm"] : null,
+    s.beginPotentialStamina != null && s.endPotentialStamina != null ? ["Stamina", `${Math.round(s.beginPotentialStamina)}→${Math.round(s.endPotentialStamina)}`, "%"] : null,
+    s.differenceBodyBattery != null ? ["Body Battery", (s.differenceBodyBattery > 0 ? "+" : "") + s.differenceBodyBattery, ""] : (a.bb != null ? ["Body Battery", a.bb, ""] : null),
+    s.waterEstimated ? ["Sweat loss", fNum(s.waterEstimated), "ml"] : null,
+    s.steps ? ["Steps", fNum(s.steps), ""] : null,
+    s.maxSpeed && hasDist ? [isFoot(a.type) ? "Best pace" : "Max speed", ...paceParts(s.maxSpeed, a.type)] : null,
+    (s.moderateIntensityMinutes != null || s.vigorousIntensityMinutes != null) ? ["Intensity min", `${s.moderateIntensityMinutes || 0}+${(s.vigorousIntensityMinutes || 0)}×2`, ""] : null,
+  ].filter(Boolean);
+  const splits = (det && det.splits) || [];
+  const maxSplitSpd = Math.max(1, ...splits.map(x => x.d / Math.max(1, x.t)));
+  return `<div class="sheet-in">
+    <div class="sheet-bar"><button class="back" data-close aria-label="Back"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></button><span class="sheet-title">ACTIVITY</span><span style="width:42px"></span></div>
+    <div class="act-head"><div class="ty" style="background:${info.c}">${info.l}</div><div><h1>${esc(a.name || info.l)}</h1>
+      <div class="sub">${fDay(st)} · ${fClock(st)}${det && det.location ? " · " + esc(det.location) : ""}</div></div></div>
+    <div class="grid">
+      <section class="card span-3 tv-12" tabindex="0"><div class="hero-stats">${hero.map(([l, v, u]) => `<div><div class="l">${l}</div><div class="v">${v}${u ? `<small>${u}</small>` : ""}</div></div>`).join("")}</div></section>
+      ${ai ? `<section class="card ai-mini span-3 tv-12" tabindex="0"><div class="ai-mark">AI</div><div><h3>${esc(ai.title || "")}</h3><p>${esc(ai.text || "")}</p></div></section>` : ""}
+      ${loading ? `<section class="card span-3 tv-12"><div class="empty">Loading details…</div></section>` : ""}
+      ${!loading && !det ? `<section class="card span-3 tv-12"><div class="empty">Full charts and route are kept for your ${40} most recent activities.</div></section>` : ""}
+      ${det && det.route && det.route.length > 5 ? `<section class="card tv-6" tabindex="0"><div class="kicker"><h2><span class="dot" style="background:${C.heart}"></span>Route</h2><span class="sub">ends trimmed for privacy</span></div>
+        <div class="route" id="s-route"></div><div class="grad-legend">Heart rate low <i></i> high</div></section>` : ""}
+      ${charts.length ? `<section class="card tv-6 ${det && det.route && det.route.length > 5 ? "" : "span-3 tv-12"}" tabindex="0"><div class="kicker"><h2><span class="dot" style="background:${C.ink}"></span>Over the ${ser.d ? "distance" : "session"}</h2><span class="readout" id="s-readout">${TV ? "" : "Drag across a chart"}</span></div>
+        ${charts.map(([k, l, u]) => `<div class="chart-head"><b>${l}</b><span>${u}</span></div><div class="chart" id="s-c-${k}"></div>`).join("")}</section>` : ""}
+      ${splits.length ? `<section class="card tv-6" tabindex="0"><div class="kicker"><h2><span class="dot" style="background:${C.steps}"></span>Splits</h2><span class="sub">per ${det.splitUnit >= 1000 ? det.splitUnit / 1000 + " km" : det.splitUnit + " m"}</span></div>
+        <table class="splits"><thead><tr><th>#</th><th>${isFoot(a.type) ? "Pace" : "Speed"}</th><th>HR</th><th>Gain</th><th></th></tr></thead><tbody>
+        ${splits.map(x => { const v = x.d / Math.max(1, x.t); return `<tr><td>${x.n}${x.d < det.splitUnit * 0.95 ? "*" : ""}</td><td>${isFoot(a.type) ? secPace(x.t / x.d * 1000) : (v * 3.6).toFixed(1)}</td><td>${x.hr ?? "–"}</td><td>${x.gain != null ? x.gain + " m" : "–"}</td><td class="bar-cell"><i style="width:${(v / maxSplitSpd * 100).toFixed(0)}%"></i></td></tr>`; }).join("")}
+        </tbody></table></section>` : ""}
+      ${zt ? `<section class="card tv-6" tabindex="0"><div class="kicker"><h2><span class="dot" style="background:${C.heart}"></span>Heart rate zones</h2><span class="sub">${fDur(zt)}</span></div>
+        <div class="zones" style="height:14px">${zones.map((z, k) => z ? `<i style="flex:${z};background:${ZONE_COLS[k]}"></i>` : "").join("")}</div>
+        <table class="splits" style="margin-top:8px"><tbody>${zones.map((z, k) => `<tr><td><span class="dot" style="background:${ZONE_COLS[k]};margin-right:6px"></span>Z${k + 1}</td><td>${fDur(z || 0)}</td><td>${Math.round((z || 0) / zt * 100)}%</td><td class="bar-cell"><i style="width:${Math.round((z || 0) / zt * 100)}%;background:${ZONE_COLS[k]}"></i></td></tr>`).join("")}</tbody></table></section>` : ""}
+      ${te != null ? `<section class="card tv-6" tabindex="0"><div class="kicker"><h2><span class="dot" style="background:${C.hrv}"></span>Training effect</h2><span class="sub">${esc(humanize(s.trainingEffectLabel || a.teLabel || ""))}</span></div>
+        <div class="te"><div class="between"><span>Aerobic</span><b>${te.toFixed(1)}</b></div>${teBar(te, C.hrv)}<div class="sub" style="margin-top:6px">${esc(msg(s.aerobicTrainingEffectMessage))}</div></div>
+        <div class="te"><div class="between"><span>Anaerobic</span><b>${(tea || 0).toFixed(1)}</b></div>${teBar(tea || 0, C.stress)}<div class="sub" style="margin-top:6px">${esc(msg(s.anaerobicTrainingEffectMessage))}</div></div></section>` : ""}
+      ${form.length ? `<section class="card tv-6" tabindex="0"><div class="kicker"><h2><span class="dot" style="background:${C.vo2}"></span>${isFoot(a.type) ? "Running form & more" : "More metrics"}</h2></div>
+        <div class="stats c3">${form.map(([l, v, u]) => `<div class="stat"><div class="l">${l}</div><div class="v">${v}${u ? `<small>${u}</small>` : ""}</div></div>`).join("")}</div></section>` : ""}
+    </div></div>`;
+}
+function mountSheet(a, det){
+  if (!det || !det.series) return;
+  const ser = det.series, useD = !!ser.d, xs = useD ? ser.d.map(v => v == null ? null : v / 1000) : ser.t.map(v => v == null ? null : v / 60);
+  const ok = xs.map(v => v != null);
+  const X = xs.filter((v, i) => ok[i]), pick = arr => arr ? arr.filter((v, i) => ok[i]) : null;
+  const S = {}; Object.keys(ser).forEach(k => { S[k] = pick(ser[k]); });
+  const xFmt = v => useD ? (v >= 10 ? v.toFixed(0) : v.toFixed(1)) + " km" : Math.round(v) + " min";
+  const foot = isFoot(a.type) || isSwim(a.type);
+  const paceArr = S.speed ? S.speed.map(v => v && v > 0.4 ? (isSwim(a.type) ? 100 : 1000) / v : null) : null;
+  const pct = (arr, q) => { const v = arr.filter(x => x != null).sort((x, y) => x - y); return v.length ? v[Math.floor((v.length - 1) * q)] : null; };
+  // route
+  const routeEl = $("#s-route"); let routeDot = null, routePts = [];
+  if (routeEl && det.route) {
+    const rt = det.route, lat0 = rt.reduce((x, p) => x + p[0], 0) / rt.length, kx = Math.cos(lat0 * Math.PI / 180);
+    const px = rt.map(p => [p[1] * kx, -p[0]]);
+    const minX = Math.min(...px.map(p => p[0])), maxX = Math.max(...px.map(p => p[0])), minY = Math.min(...px.map(p => p[1])), maxY = Math.max(...px.map(p => p[1]));
+    const W = routeEl.clientWidth, H = Math.round(Math.min(W * 0.75, TV ? rem() * 22 : 320)), pad = 16;
+    const sc = Math.min((W - 2 * pad) / ((maxX - minX) || 1e-9), (H - 2 * pad) / ((maxY - minY) || 1e-9));
+    const ox = (W - (maxX - minX) * sc) / 2, oy = (H - (maxY - minY) * sc) / 2;
+    routePts = px.map((p, i) => [ox + (p[0] - minX) * sc, oy + (p[1] - minY) * sc, rt[i][2]]);
+    // colour each segment by heart rate at that distance
+    const hrAt = d => { if (!S.hr || d == null || !useD) return null; let lo = 0, hi = X.length - 1; while (lo < hi) { const mid = (lo + hi) >> 1; if (X[mid] * 1000 < d) lo = mid + 1; else hi = mid; } return S.hr[lo]; };
+    const hrs = routePts.map(p => hrAt(p[2])).filter(v => v), h0 = pct(hrs, 0.05) || 0, h1 = pct(hrs, 0.95) || 1;
+    const ramp = ["#3987e5", "#199e70", "#fab219", "#e66767"];
+    const colAt = hv => hv == null ? C.heart : ramp[clamp(Math.floor((hv - h0) / ((h1 - h0) || 1) * 4), 0, 3)];
+    let segs = "", d0 = `M${routePts[0][0].toFixed(1)},${routePts[0][1].toFixed(1)}`;
+    for (let i = 1; i < routePts.length; i++) {
+      const p = routePts[i], q = routePts[i - 1];
+      d0 += `L${p[0].toFixed(1)},${p[1].toFixed(1)}`;
+      segs += `<line x1="${q[0].toFixed(1)}" y1="${q[1].toFixed(1)}" x2="${p[0].toFixed(1)}" y2="${p[1].toFixed(1)}" stroke="${colAt(hrAt(p[2]))}"/>`;
+    }
+    const s0 = routePts[0], s1 = routePts[routePts.length - 1];
+    routeEl.innerHTML = `<svg viewBox="0 0 ${W} ${H}" height="${H}"><rect width="${W}" height="${H}" rx="12" fill="#0b0c0f"/>
+      <path d="${d0}" fill="none" stroke="#ffffff" stroke-opacity=".07" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+      <g stroke-width="3.2" stroke-linecap="round">${segs}</g>
+      <circle cx="${s0[0]}" cy="${s0[1]}" r="5" fill="#0ca30c" stroke="#000" stroke-width="2"/><circle cx="${s1[0]}" cy="${s1[1]}" r="5" fill="#f0efec" stroke="#000" stroke-width="2"/>
+      <circle id="route-dot" r="7" fill="#fff" stroke="#000" stroke-width="2" style="display:none"/></svg>`;
+    routeDot = $("#route-dot");
+  }
+  const readout = $("#s-readout");
+  const onIndex = i => {
+    if (i == null) { if (routeDot) routeDot.style.display = "none"; return; }
+    if (readout) readout.textContent = `${xFmt(X[i])}${S.hr && S.hr[i] ? " · " + Math.round(S.hr[i]) + " bpm" : ""}${paceArr && paceArr[i] ? " · " + (foot ? secPace(paceArr[i]) + (isSwim(a.type) ? "/100m" : "/km") : (S.speed[i] * 3.6).toFixed(1) + " km/h") : ""}${S.elev && S.elev[i] != null ? " · " + Math.round(S.elev[i]) + " m" : ""}`;
+    if (routeDot && routePts.length && useD) {
+      const d = X[i] * 1000; let best = 0, bd = Infinity;
+      routePts.forEach((p, k) => { if (p[2] != null) { const dd = Math.abs(p[2] - d); if (dd < bd) { bd = dd; best = k; } } });
+      routeDot.setAttribute("cx", routePts[best][0]); routeDot.setAttribute("cy", routePts[best][1]); routeDot.style.display = "";
+    }
+  };
+  window.__onHideTip = () => onIndex(null);
+  const tipFor = i => `<b>${xFmt(X[i])}</b>${S.hr && S.hr[i] ? tipRow(C.heart, "Heart rate", Math.round(S.hr[i]) + " bpm") : ""}${paceArr && paceArr[i] ? tipRow(C.steps, foot ? "Pace" : "Speed", foot ? secPace(paceArr[i]) : (S.speed[i] * 3.6).toFixed(1) + " km/h") : ""}${S.elev && S.elev[i] != null ? tipRow(C.ink2, "Elevation", Math.round(S.elev[i]) + " m") : ""}${S.cad && S.cad[i] ? tipRow(C.hrv, "Cadence", Math.round(S.cad[i])) : ""}${S.power && S.power[i] ? tipRow(C.battery, "Power", Math.round(S.power[i]) + " W") : ""}`;
+  const base = { xs: X, kind: "num", xFmt, h: TV ? 110 : 120, tip: tipFor, onIndex, ticks: 3 };
+  const draw = (k, opts) => { const el = $("#s-c-" + k); if (el) lineChart(el, Object.assign({}, base, opts)); };
+  if (S.hr) draw("hr", { series: [{ ys: S.hr, color: C.heart, w: 1.6, area: true }], ref: det.summary.averageHR ? { y: det.summary.averageHR, label: "avg " + Math.round(det.summary.averageHR) } : null });
+  if (S.speed && $("#s-c-speed")) {
+    if (foot) draw("speed", { series: [{ ys: paceArr, color: C.steps, w: 1.6 }], invert: true, yMin: pct(paceArr, 0.03) * 0.97, yMax: pct(paceArr, 0.97) * 1.03, yFmt: v => secPace(v) });
+    else draw("speed", { series: [{ ys: S.speed.map(v => v == null ? null : v * 3.6), color: C.steps, w: 1.6, area: true }], yMin: 0, yFmt: v => Math.round(v) });
+  }
+  if (S.elev) draw("elev", { series: [{ ys: S.elev, color: "#9a9a96", w: 1.4, area: true }] });
+  if (S.cad) draw("cad", { series: [{ ys: S.cad.map(v => v || null), color: C.hrv, dots: true, dotsOnly: true, r: 1.4, opacity: .6 }], yMin: pct(S.cad.filter(v => v), 0.03) * 0.95 });
+  if (S.power) draw("power", { series: [{ ys: S.power, color: C.battery, w: 1.2, area: true }], yMin: 0 });
+  if (S.resp) draw("resp", { series: [{ ys: S.resp, color: C.hrv, w: 1.6 }] });
+  if (S.stamina) draw("stamina", { series: [{ ys: S.stamina, color: C.vo2, w: 1.8, area: true }], yMin: 0, yMax: 100 });
+}
 
 /* ============================================================ render */
 function renderTabs(){
@@ -1038,7 +1422,8 @@ function render(keepFocus){
   if (state.view !== "today") $("#app header.top h1").remove();
   const rs = $("#railSync"); if (rs) rs.textContent = "Synced " + (gen ? relTime(gen) : "–");
   const token = ++renderSeq;
-  requestAnimationFrame(() => { if (token !== renderSeq) return; v.mount(); if (TV && !keepFocus) focusFirst(); });
+  hideTip();
+  requestAnimationFrame(() => { if (token !== renderSeq) return; v.mount(); mountSpheres(); if (TV && !keepFocus) focusFirst(); });
   renderTabs();
 }
 
@@ -1049,7 +1434,9 @@ document.addEventListener("click", e => {
   else if (b.dataset.range) { state.range = +b.dataset.range; saveState(); render(true); restoreFocus(`[data-range="${b.dataset.range}"]`); }
   else if (b.dataset.heat) { state.heat = b.dataset.heat; render(true); restoreFocus(`[data-heat="${b.dataset.heat}"]`); }
   else if (b.dataset.month) { state.month = b.dataset.month; render(true); restoreFocus(`[data-month="${b.dataset.month}"]`); }
-  else if (b.dataset.act) { const id = +b.dataset.act; state.openAct = state.openAct === id ? null : id; b.classList.toggle("open"); }
+  else if (b.dataset.act) { openActivity(+b.dataset.act); }
+  else if (b.dataset.close != null) { closeActivity(); }
+  else if (b.dataset.metric) { state.actMetric = b.dataset.metric; }
 });
 function go(view){ state.view = view; history.replaceState(null, "", "#" + view); window.scrollTo(0, 0); $("#app").scrollTop = 0; render(); }
 function restoreFocus(sel){ if (TV) requestAnimationFrame(() => $(sel)?.focus()); }
@@ -1059,8 +1446,20 @@ addEventListener("hashchange", () => { const v = location.hash.slice(1); if (VIE
 let rt; addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(() => { fitTV(); render(true); }, 150); });
 
 /* ---------- TV: spatial navigation + ambient mode ---------- */
-function focusables(){ return [...document.querySelectorAll("nav.tabs .tab, #app .seg button, #app .card[tabindex], #app .tile[tabindex], #app .act")].filter(el => el.offsetParent !== null); }
-function focusFirst(){ const t = document.querySelector(".tab.on"); t && t.focus(); }
+function focusables(){
+  if (sheetOpen()) return [...document.querySelectorAll("#sheet .back, #sheet .card[tabindex], #sheet .seg button")].filter(el => el.offsetParent !== null);
+  return [...document.querySelectorAll("nav.tabs .tab, #app .seg button, #app .card[tabindex], #app .tile[tabindex], #app .act")].filter(el => el.offsetParent !== null);
+}
+function ensureVisible(el){
+  const sc = el.closest("#sheet") || el.closest("#app");
+  if (!sc || el.closest("nav")) return;
+  const r = el.getBoundingClientRect(), m = rem() * 2.6, vh = innerHeight;
+  let d = 0;
+  if (r.height > vh - 2 * m || r.top < m) d = r.top - m;
+  else if (r.bottom > vh - m) d = r.bottom - (vh - m);
+  if (Math.abs(d) > 1) sc.scrollTo({top: sc.scrollTop + d, behavior: "smooth"});
+}
+function focusFirst(){ if (sheetOpen()) { const b = $("#sheet .back"); if (b) b.focus(); return; } const t = document.querySelector(".tab.on"); t && t.focus(); }
 function moveFocus(dir){
   const cur = document.activeElement, list = focusables();
   if (!cur || !list.includes(cur)) { focusFirst(); return; }
@@ -1077,11 +1476,12 @@ function moveFocus(dir){
     const sc = main + cross * 2;
     if (sc < bs) { bs = sc; best = el; }
   });
-  if (best) { best.focus({preventScroll:true}); best.scrollIntoView({block: "nearest", behavior: "smooth"}); }
+  if (best) { best.focus({preventScroll:true}); ensureVisible(best); }
 }
 let ambientTimer = null, idleTimer = null, ambientIdx = 0, okDown = 0;
 const AMBIENT_MS = 20000, IDLE_MS = 120000;
 function startAmbient(){
+  if (sheetOpen()) closeActivity();
   document.body.classList.add("ambient"); ambientIdx = VIEWS.indexOf(state.view);
   const bar = $("#ambientBar");
   const step = () => {
@@ -1097,6 +1497,7 @@ function startAmbient(){
 }
 function stopAmbient(){ if (!ambientTimer) return false; clearInterval(ambientTimer); ambientTimer = null; document.body.classList.remove("ambient"); focusFirst(); return true; }
 function resetIdle(){ clearTimeout(idleTimer); if (TV) idleTimer = setTimeout(startAmbient, IDLE_MS); }
+document.addEventListener("keydown", e => { if (!TV && e.key === "Escape" && sheetOpen()) closeActivity(); });
 document.addEventListener("keydown", e => {
   if (!TV && !/^Arrow/.test(e.key)) return;
   if (stopAmbient()) { e.preventDefault(); resetIdle(); return; }
@@ -1108,11 +1509,13 @@ document.addEventListener("keydown", e => {
     else if (Date.now() - okDown > 900) { okDown = 0; e.preventDefault(); startAmbient(); return; }
     const el = document.activeElement; if (el && !/BUTTON/.test(el.tagName)) { e.preventDefault(); }
   }
+  else if (k === "Escape" && sheetOpen()) { e.preventDefault(); closeActivity(); }
   else if ((k === "Escape" || k === "Backspace" || k === "GoBack") && TV) { if (!document.activeElement?.closest("nav")) { e.preventDefault(); focusFirst(); } }
 });
 // Hooks for the Android TV wrapper app
 window.tvBack = () => {           // remote Back: stop ambient, else return to the menu, else let the app exit
   if (stopAmbient()) { resetIdle(); return true; }
+  if (sheetOpen()) { closeActivity(); resetIdle(); return true; }
   resetIdle();
   if (!document.activeElement?.closest("nav")) { focusFirst(); $("#app").scrollTo({top: 0, behavior: "smooth"}); return true; }
   return false;
