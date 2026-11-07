@@ -303,7 +303,7 @@ body.tv .brandrow .wordmark{display:none}
 /* ---------- maps ---------- */
 .map{position:relative;overflow:hidden;border-radius:12px;background:#0b0c0f}
 .map .mtile{position:absolute;max-width:none;display:block;margin:0;padding:0;border:0}
-.map .mtile-cn{filter:invert(1) hue-rotate(185deg) saturate(.35) brightness(.78) contrast(1.15)}
+.map .mtile-dark{filter:invert(1) hue-rotate(185deg) saturate(.35) brightness(.78) contrast(1.15)}
 .map svg{position:absolute;top:0;left:0;width:100%}
 .map-attr{position:absolute;right:8px;bottom:6px;font-size:.6rem;color:rgba(255,255,255,.55);background:rgba(0,0,0,.45);padding:1px 6px;border-radius:6px}
 
@@ -1777,16 +1777,16 @@ function tileMap(rt, W, H){
   const cx = (Math.max(...pp.map(p => p[0])) + Math.min(...pp.map(p => p[0]))) / 2, cy = (Math.max(...pp.map(p => p[1])) + Math.min(...pp.map(p => p[1]))) / 2;
   const ox = cx - W / 2, oy = cy - H / 2;
   // sharper tiles on high-density screens: one zoom level deeper, drawn at half size
-  const hi = (window.devicePixelRatio || 1) >= 1.5 && !china ? 0 : ((window.devicePixelRatio || 1) >= 1.5 ? 1 : 0);
+  const hi = (window.devicePixelRatio || 1) >= 1.5 ? 1 : 0;
   const tz = z + hi, ts = 256 / Math.pow(2, hi), k = Math.pow(2, hi);
   const x0 = Math.floor(ox * k / 256), x1 = Math.floor((ox + W) * k / 256), y0 = Math.floor(oy * k / 256), y1 = Math.floor((oy + H) * k / 256);
   let tiles = "";
   for (let ty = y0; ty <= y1; ty++) for (let tx = x0; tx <= x1; tx++) {
     const url = china ? `https://webrd0${((tx + ty) % 4) + 1}.is.autonavi.com/appmaptile?lang=en&size=1&scale=1&style=7&x=${tx}&y=${ty}&z=${tz}`
-                      : `https://${"abcd"[(tx + ty) % 4]}.basemaps.cartocdn.com/dark_all/${tz}/${tx}/${ty}@2x.png`;
-    tiles += `<img class="mtile ${china ? "mtile-cn" : ""}" alt="" src="${url}" style="left:${(tx * ts - ox).toFixed(1)}px;top:${(ty * ts - oy).toFixed(1)}px;width:${ts}px;height:${ts}px">`;
+                      : `https://tile.openstreetmap.org/${tz}/${tx}/${ty}.png`;
+    tiles += `<img class="mtile mtile-dark" alt="" src="${url}" style="left:${(tx * ts - ox).toFixed(1)}px;top:${(ty * ts - oy).toFixed(1)}px;width:${ts}px;height:${ts}px">`;
   }
-  return { pts: pp.map((p, i) => [p[0] - ox, p[1] - oy, rt[i][2]]), tiles, attr: china ? "© AutoNavi" : "© OpenStreetMap © CARTO" };
+  return { pts: pp.map((p, i) => [p[0] - ox, p[1] - oy, rt[i][2]]), tiles, attr: china ? "© AutoNavi" : "© OpenStreetMap contributors" };
 }
 
 /* ============================================================ render */
