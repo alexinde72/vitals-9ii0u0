@@ -6,7 +6,7 @@ One web app with two layouts: phone (iOS home-screen app) and TV (landscape, D-p
 web/          the app (index.html + manifest + service worker + icons); data.json is generated
 sync/         sync.py pulls Garmin data → web/data.json · save_key.py stores your Personal API key locally
 .github/      daily GitHub Actions job: sync → AI briefing → publish to GitHub Pages
-tv/           (next phase) Android TV wrapper APK
+tv/           Android TV app (full-screen WebView of the TV layout) + build script
 ```
 
 ## How it works
@@ -37,6 +37,17 @@ python3 -m http.server 8766 --directory web
 6. **iPhone**: open the Pages URL in Safari → Share → Add to Home Screen.
 
 **When the key expires**, the app shows "Sync overdue". Create a new key and replace the `GARMIN_PERSONAL_API_KEY` secret.
+
+## Android TV app
+- **Build:** `tv/build.sh`. It uses the JDK and Android SDK in `.tools/`, with no Gradle, and writes `tv/vitals-tv.apk`.
+- **Install:** `.tools/android/platform-tools/adb connect 192.168.0.4:5555`, then `.tools/android/platform-tools/adb install -r tv/vitals-tv.apk`.
+- **Remote:**
+  - Arrows move focus.
+  - OK opens things; holding OK starts ambient mode.
+  - Back returns to the menu, and closes the app from the menu.
+  - Menu turns ambient mode on or off.
+- **Old browsers:** the TV's WebView is Chrome 74, so the deploy job converts the JavaScript to older syntax (`sync/legacy_build.py`). The CSS has fallbacks for missing flexbox `gap`.
+- **No external resources:** fonts are bundled because Google Fonts is blocked on networks in mainland China.
 
 ## Privacy note
 The code repo contains no health data. `data.json` only exists on the published site, so anyone who has the URL can read it. Keep the URL to yourself.
