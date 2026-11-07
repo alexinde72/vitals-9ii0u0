@@ -1348,7 +1348,7 @@ function mountSheet(a, det){
     const rt = det.route, lat0 = rt.reduce((x, p) => x + p[0], 0) / rt.length, kx = Math.cos(lat0 * Math.PI / 180);
     const px = rt.map(p => [p[1] * kx, -p[0]]);
     const minX = Math.min(...px.map(p => p[0])), maxX = Math.max(...px.map(p => p[0])), minY = Math.min(...px.map(p => p[1])), maxY = Math.max(...px.map(p => p[1]));
-    const W = routeEl.clientWidth, H = Math.round(Math.min(W * 0.75, TV ? rem() * 22 : 320)), pad = 16;
+    const W = routeEl.clientWidth, H = Math.round(TV ? Math.min(W * 0.95, rem() * 34) : Math.min(W * 0.75, 320)), pad = 16;
     const sc = Math.min((W - 2 * pad) / ((maxX - minX) || 1e-9), (H - 2 * pad) / ((maxY - minY) || 1e-9));
     const ox = (W - (maxX - minX) * sc) / 2, oy = (H - (maxY - minY) * sc) / 2;
     routePts = px.map((p, i) => [ox + (p[0] - minX) * sc, oy + (p[1] - minY) * sc, rt[i][2]]);

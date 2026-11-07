@@ -38,6 +38,30 @@ python3 -m http.server 8766 --directory web
 
 **When the key expires**, the app shows "Sync overdue". Create a new key and replace the `GARMIN_PERSONAL_API_KEY` secret.
 
+## Insights: how they're made
+1. **`sync/analysis.py`** computes the numbers, so the model never does maths:
+   - HRV z-score vs 28-day baseline, and 7-day coefficient of variation (CV)
+   - resting HR drift
+   - sleep debt and regularity, social jet lag, stage mix
+   - ACWR, Foster monotony and strain
+   - intensity distribution from heart rate zones
+   - 90-day correlations, for example stress vs that night's sleep
+   - Vitals Age pace of aging
+2. **`sync/coach_skill.md`** is the analysis "skill": the sports-science playbook the model follows. It sets thresholds, how to read each signal, writing rules and the output schema.
+3. **Gemini** (or Claude) receives the playbook plus the computed facts and returns JSON:
+   - `today` (briefing)
+   - `sleep`, `heart`, `activity`, `trends` (one insight per page)
+   - `vitalsAge` and `latestActivity`
+4. **Rule-based insights** are still computed in the app, so something useful shows even without AI.
+
+## Activity details
+The newest 40 activities get `web/acts/<id>.json`:
+- downsampled heart rate, pace, elevation, cadence, power, respiration and stamina
+- per-km (run) or per-5 km (ride) splits
+- a GPS route **with the first and last 400 m trimmed** so the public site doesn't reveal where you start
+
+These files aren't committed. The daily job reuses the published copies and only fetches new activities.
+
 ## Android TV app
 - **Build:** `tv/build.sh`. It uses the JDK and Android SDK in `.tools/`, with no Gradle, and writes `tv/vitals-tv.apk`.
 - **Install:** `.tools/android/platform-tools/adb connect 192.168.0.4:5555`, then `.tools/android/platform-tools/adb install -r tv/vitals-tv.apk`.
