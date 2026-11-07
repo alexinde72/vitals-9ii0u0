@@ -560,10 +560,20 @@ def ask_gemini(prompt):
         return None
     model = pick_gemini_model(key)
     print("  Gemini model: %s" % model)
-    r = http_json("https://generativelanguage.googleapis.com/v1beta/models/%s:generateContent" % model,
-                  {"contents": [{"role": "user", "parts": [{"text": prompt}]}],
-                   "generationConfig": {"responseMimeType": "application/json", "temperature": 0.6, "maxOutputTokens": 2048}},
-                  headers={"x-goog-api-key": key})
+    url = "https://generativelanguage.googleapis.com/v1beta/models/%s:generateContent" % model
+    base = {"responseMimeType": "application/json", "temperature": 0.6, "maxOutputTokens": 4096}
+    # Short briefing: keep "thinking" low so it answers in seconds. Older models use a token budget instead.
+    for extra in ({"thinkingConfig": {"thinkingLevel": "low"}}, {"thinkingConfig": {"thinkingBudget": 512}}, {}):
+        try:
+            r = http_json(url, {"contents": [{"role": "user", "parts": [{"text": prompt}]}], "generationConfig": dict(base, **extra)},
+                          headers={"x-goog-api-key": key}, timeout=180)
+            break
+        except RuntimeError as e:
+            if "HTTP 400" not in str(e):
+                raise
+            print("  (Gemini rejected %s, retrying)" % (list(extra.get("thinkingConfig", {})) or "plain request"))
+    else:
+        return None
     parts = g(r, "candidates", 0, "content", "parts", default=[]) or []
     return "".join(p.get("text", "") for p in parts if not p.get("thought"))
 
