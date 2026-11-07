@@ -1448,7 +1448,9 @@ let rt; addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(() 
 /* ---------- TV: spatial navigation + ambient mode ---------- */
 function focusables(){
   if (sheetOpen()) return [...document.querySelectorAll("#sheet .back, #sheet .card[tabindex], #sheet .seg button")].filter(el => el.offsetParent !== null);
-  return [...document.querySelectorAll("nav.tabs .tab, #app .seg button, #app .card[tabindex], #app .tile[tabindex], #app .act")].filter(el => el.offsetParent !== null);
+  // cards that hold activity rows aren't focus targets themselves: the rows are
+  return [...document.querySelectorAll("nav.tabs .tab, #app .seg button, #app .card[tabindex], #app .tile[tabindex], #app .act")]
+    .filter(el => el.offsetParent !== null && !(el.classList.contains("card") && el.querySelector(".act")));
 }
 function ensureVisible(el){
   const sc = el.closest("#sheet") || el.closest("#app");
