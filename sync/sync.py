@@ -31,8 +31,8 @@ ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "web" / "data.json"
 HISTORY_DAYS = 400
 DETAIL_ACTIVITIES = 40      # newest activities that get a full detail file (web/acts/<id>.json)
-DETAIL_VERSION = 2
-PRIVACY_TRIM_M = 400        # GPS route start/end trimmed so the public site doesn't reveal home
+DETAIL_VERSION = 3
+PRIVACY_TRIM_M = 0          # metres trimmed from each end of GPS routes (0 = full route)
 MAX_ACTIVITIES = 150
 
 
@@ -308,12 +308,12 @@ def build_detail(a, summ, det):
         pts = [(p.get("lat"), p.get("lon"), None) for p in g(det, "geoPolylineDTO", "polyline", default=[]) or [] if p.get("lat") is not None]
     if len(pts) > 20:
         total = next((p[2] for p in reversed(pts) if p[2] is not None), None)
-        if total and total > PRIVACY_TRIM_M * 3:
+        if PRIVACY_TRIM_M and total and total > PRIVACY_TRIM_M * 3:
             pts = [p for p in pts if p[2] is not None and PRIVACY_TRIM_M <= p[2] <= total - PRIVACY_TRIM_M]
-        else:
+        elif PRIVACY_TRIM_M:
             k = max(1, len(pts) // 10)
             pts = pts[k:-k]
-        st = max(1, len(pts) // 500)
+        st = max(1, len(pts) // 900)
         route = [[round(p[0], 5), round(p[1], 5), round(p[2]) if p[2] is not None else None] for p in pts[::st]]
 
     keep = ("distance", "duration", "movingDuration", "elevationGain", "elevationLoss", "maxElevation", "minElevation",

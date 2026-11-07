@@ -68,42 +68,37 @@ public class Art {
         g.setTransform(t0);
     }
 
+    /** Launcher icon: the VITALS wordmark on black. */
     static BufferedImage icon(int n) {
         BufferedImage img = new BufferedImage(n, n, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = g(img);
         g.setColor(BG); g.fill(new RoundRectangle2D.Double(0, 0, n, n, n * 0.22, n * 0.22));
-        g.setColor(INK); g.scale(n / 100.0, n / 100.0); mark(g, 33, 4.4);
+        g.setColor(INK);
+        double ws = n * 0.78 / 400.0;
+        g.translate((n - 400 * ws) / 2, (n - 100 * ws) / 2); g.scale(ws, ws); wordmark(g);
         g.dispose();
         return img;
     }
 
+    /** Home-row banner: just the VITALS wordmark, centred. */
     static BufferedImage banner(int w, int h) {
         BufferedImage img = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = g(img);
         g.setColor(BG); g.fillRect(0, 0, w, h);
         g.setColor(INK);
-        AffineTransform t0 = g.getTransform();
-        double ms = h * 0.5 / 100.0;                        // mark: half the banner height
-        g.translate(h * 0.2, (h - 100 * ms) / 2); g.scale(ms, ms); mark(g, 44, 5);
-        g.setTransform(t0);
-        double ws = h * 0.15 / 100.0;                       // wordmark cap height 15% of banner
-        g.translate(h * 0.2 + 100 * ms + h * 0.15, (h - 100 * ws) / 2); g.scale(ws, ws); wordmark(g);
+        double ws = w * 0.62 / 400.0;
+        g.translate((w - 400 * ws) / 2, (h - 100 * ws) / 2); g.scale(ws, ws); wordmark(g);
         g.dispose();
         return img;
     }
 
-    /** Boot-screen logo (mark above wordmark), shown by the window background while the WebView starts. */
+    /** Boot-screen logo: the ring mark alone, so it flows straight into the web app's zoom animation. */
     static BufferedImage splashLogo() {
-        int w = 360, h = 300;
-        BufferedImage img = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+        int n = 300;
+        BufferedImage img = new BufferedImage(n, n, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = g(img);
         g.setColor(INK);
-        AffineTransform t0 = g.getTransform();
-        double ms = 1.5;
-        g.translate((w - 100 * ms) / 2, 10); g.scale(ms, ms); mark(g, 44, 5);
-        g.setTransform(t0);
-        double ws = 0.42;
-        g.translate((w - 400 * ws) / 2, 10 + 100 * ms + 50); g.scale(ws, ws); wordmark(g);
+        g.scale(n / 100.0, n / 100.0); mark(g, 47.4, 5.2);
         g.dispose();
         return img;
     }

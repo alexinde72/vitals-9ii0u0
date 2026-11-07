@@ -290,21 +290,22 @@ body.tv .rail-extra .clock{font-size:3rem;font-weight:700}
 .mark{display:block;fill:currentColor;color:var(--ink)}
 .brandrow{display:flex;align-items:center;color:var(--muted);font-family:var(--cond);font-weight:700;letter-spacing:.2em;font-size:.8rem}
 .brandrow .wordmark{height:12px;margin-right:10px;color:var(--ink)}
-#splash{position:fixed;top:0;left:0;right:0;bottom:0;z-index:100;background:#000;display:flex;align-items:center;justify-content:center;transition:opacity .5s ease, visibility .5s}
-#splash.gone{opacity:0;visibility:hidden}
-.splash-in{display:flex;flex-direction:column;align-items:center}
-.splash-mark{width:84px;height:84px;color:#fff;animation:splashIn .9s cubic-bezier(.2,.8,.2,1) both}
-.splash-word{height:22px;margin-top:26px;color:#fff;animation:splashIn .9s .15s cubic-bezier(.2,.8,.2,1) both}
-.splash-bar{width:120px;height:2px;background:rgba(255,255,255,.12);border-radius:2px;margin-top:30px;overflow:hidden}
-.splash-bar i{display:block;height:100%;width:40%;background:#fff;border-radius:2px;animation:splashBar 1.1s ease-in-out infinite}
-@keyframes splashIn{from{opacity:0;transform:translateY(8px) scale(.96)}to{opacity:1;transform:none}}
-@keyframes splashBar{0%{transform:translateX(-110%)}100%{transform:translateX(280%)}}
-body.tv .splash-mark{width:9rem;height:9rem}
-body.tv .splash-word{height:2.6rem;margin-top:2.6rem}
-body.tv .splash-bar{width:14rem;margin-top:3rem}
+#splash{position:fixed;top:0;left:0;right:0;bottom:0;z-index:100;overflow:hidden}
+#splash.gone{display:none}
+.sp-hole{position:absolute;left:50%;top:50%;box-sizing:border-box;border-radius:50%;border:solid #fff;background:#000;box-shadow:0 0 0 300vmax #000;will-change:width,height}
+.sp-hole.open{background:transparent}
+.sp-v{position:absolute;left:50%;top:50%;width:31.4%;height:47.6%;margin:-24.8% 0 0 -15.7%;fill:#fff}
 .rail-logo{padding:0 .9rem 1.8rem;color:var(--ink)}
 body.tv .brandrow .wordmark{display:none}
 .rail-logo .wordmark{height:1.15rem;color:var(--ink)}
+
+
+/* ---------- maps ---------- */
+.map{position:relative;overflow:hidden;border-radius:12px;background:#0b0c0f}
+.map .mtile{position:absolute;max-width:none;display:block;margin:0;padding:0;border:0}
+.map .mtile-cn{filter:invert(1) hue-rotate(185deg) saturate(.35) brightness(.78) contrast(1.15)}
+.map svg{position:absolute;top:0;left:0;width:100%}
+.map-attr{position:absolute;right:8px;bottom:6px;font-size:.6rem;color:rgba(255,255,255,.55);background:rgba(0,0,0,.45);padding:1px 6px;border-radius:6px}
 
 /* ---------- stacked cards & wide Vitals Age ---------- */
 .stack{display:flex;flex-direction:column;min-width:0}
@@ -446,7 +447,7 @@ window.__frames = 0; (function tick(){ window.__frames++; requestAnimationFrame(
   f.appendChild(document.createElement("div")); f.appendChild(document.createElement("div")); document.documentElement.appendChild(f);
   if (f.scrollHeight !== 1) document.documentElement.classList.add("nogap"); f.remove(); })();
 </script>
-<div id="splash"><div class="splash-in"><svg class="mark splash-mark" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="44" fill="none" stroke="currentColor" stroke-width="5"/><path d="M0 0H10L31 100H21Z M56 0H66L45 100H35Z" transform="translate(36.8 31) scale(0.4)"/></svg><svg class="wordmark splash-word" viewBox="-2 -2 404 104" aria-label="Vitals" role="img"><path d="M0 0H10L31 100H21Z M56 0H66L45 100H35Z"/><path d="M0 0H9.6V100H0Z" transform="translate(88 0)"/><path d="M0 0H56V9.6H32.8V100H23.2V9.6H0Z" transform="translate(119.5 0)"/><path d="M21 0H31L10 100H0Z M35 0H45L66 100H56Z" transform="translate(192 0)"/><path d="M0 0H9.6V90.4H48V100H0Z" transform="translate(281.5 0)"/><path d="M51 15C45.5 8 37 4.8 27 4.8 13.5 4.8 4.8 12.5 4.8 24.5 4.8 52 47.2 46 47.2 75 47.2 87.5 38.5 95.2 25 95.2 14.5 95.2 6 90.5 1 82" transform="translate(347.5 0)" fill="none" stroke="currentColor" stroke-width="9.6"/></svg><div class="splash-bar"><i></i></div></div></div>
+<div id="splash"><div class="sp-hole" id="spHole"><svg class="sp-v" viewBox="0 0 66 100" aria-hidden="true"><path d="M0 0H10L31 100H21Z M56 0H66L45 100H35Z"/></svg></div></div>
 <div id="ambientBar"></div>
 <main class="app" id="app"></main>
 <nav class="tabs" id="tabs"></nav>
@@ -1419,7 +1420,7 @@ function sheetHTML(a, det, loading){
       ${loading ? `<section class="card span-3 tv-12"><div class="empty">Loading details…</div></section>` : ""}
       ${!loading && !det ? `<section class="card span-3 tv-12"><div class="empty">Full charts and route are kept for your ${40} most recent activities.</div></section>` : ""}
       ${(det && det.route && det.route.length > 5) || splits.length ? `<div class="stack tv-6">` : ""}
-      ${det && det.route && det.route.length > 5 ? `<section class="card" tabindex="0"><div class="kicker"><h2><span class="dot" style="background:${C.heart}"></span>Route</h2><span class="sub">ends trimmed for privacy</span></div>
+      ${det && det.route && det.route.length > 5 ? `<section class="card" tabindex="0"><div class="kicker"><h2><span class="dot" style="background:${C.heart}"></span>Map</h2><span class="sub">${det.route.length} GPS points</span></div>
         <div class="route" id="s-route"></div><div class="grad-legend">Heart rate low <i></i> high</div></section>` : ""}
       ${splits.length ? `<section class="card" tabindex="0"><div class="kicker"><h2><span class="dot" style="background:${C.steps}"></span>Splits</h2><span class="sub">per ${det.splitUnit >= 1000 ? det.splitUnit / 1000 + " km" : det.splitUnit + " m"}</span></div>
         <table class="splits"><thead><tr><th>#</th><th>${isFoot(a.type) ? "Pace" : "Speed"}</th><th>HR</th><th>Gain</th><th></th></tr></thead><tbody>
@@ -1451,13 +1452,9 @@ function mountSheet(a, det){
   // route
   const routeEl = $("#s-route"); let routeDot = null, routePts = [];
   if (routeEl && det.route) {
-    const rt = det.route, lat0 = rt.reduce((x, p) => x + p[0], 0) / rt.length, kx = Math.cos(lat0 * Math.PI / 180);
-    const px = rt.map(p => [p[1] * kx, -p[0]]);
-    const minX = Math.min(...px.map(p => p[0])), maxX = Math.max(...px.map(p => p[0])), minY = Math.min(...px.map(p => p[1])), maxY = Math.max(...px.map(p => p[1]));
-    const W = routeEl.clientWidth, H = Math.round(TV ? Math.min(W * 0.75, rem() * 24) : Math.min(W * 0.75, 320)), pad = 16;
-    const sc = Math.min((W - 2 * pad) / ((maxX - minX) || 1e-9), (H - 2 * pad) / ((maxY - minY) || 1e-9));
-    const ox = (W - (maxX - minX) * sc) / 2, oy = (H - (maxY - minY) * sc) / 2;
-    routePts = px.map((p, i) => [ox + (p[0] - minX) * sc, oy + (p[1] - minY) * sc, rt[i][2]]);
+    const rt = det.route, W = routeEl.clientWidth, H = Math.round(TV ? Math.min(W * 0.75, rem() * 24) : Math.min(W * 0.8, 340));
+    const map = tileMap(rt, W, H);
+    routePts = map.pts;
     // colour each segment by heart rate at that distance
     const hrAt = d => { if (!S.hr || d == null || !useD) return null; let lo = 0, hi = X.length - 1; while (lo < hi) { const mid = (lo + hi) >> 1; if (X[mid] * 1000 < d) lo = mid + 1; else hi = mid; } return S.hr[lo]; };
     const hrs = routePts.map(p => hrAt(p[2])).filter(v => v), h0 = pct(hrs, 0.05) || 0, h1 = pct(hrs, 0.95) || 1;
@@ -1470,11 +1467,11 @@ function mountSheet(a, det){
       segs += `<line x1="${q[0].toFixed(1)}" y1="${q[1].toFixed(1)}" x2="${p[0].toFixed(1)}" y2="${p[1].toFixed(1)}" stroke="${colAt(hrAt(p[2]))}"/>`;
     }
     const s0 = routePts[0], s1 = routePts[routePts.length - 1];
-    routeEl.innerHTML = `<svg viewBox="0 0 ${W} ${H}" height="${H}"><rect width="${W}" height="${H}" rx="12" fill="#0b0c0f"/>
-      <path d="${d0}" fill="none" stroke="#ffffff" stroke-opacity=".07" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
-      <g stroke-width="3.2" stroke-linecap="round">${segs}</g>
+    routeEl.innerHTML = `<div class="map" style="height:${H}px">${map.tiles}<svg viewBox="0 0 ${W} ${H}" height="${H}">
+      <path d="${d0}" fill="none" stroke="#000" stroke-opacity=".6" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+      <g stroke-width="3.6" stroke-linecap="round">${segs}</g>
       <circle cx="${s0[0]}" cy="${s0[1]}" r="5" fill="#0ca30c" stroke="#000" stroke-width="2"/><circle cx="${s1[0]}" cy="${s1[1]}" r="5" fill="#f0efec" stroke="#000" stroke-width="2"/>
-      <circle id="route-dot" r="7" fill="#fff" stroke="#000" stroke-width="2" style="display:none"/></svg>`;
+      <circle id="route-dot" r="7" fill="#fff" stroke="#000" stroke-width="2" style="display:none"/></svg><div class="map-attr">${map.attr}</div></div>`;
     routeDot = $("#route-dot");
   }
   const readout = $("#s-readout");
@@ -1744,6 +1741,54 @@ if (window.visualViewport) { visualViewport.addEventListener("resize", fitChat);
 chat.addEventListener("focusin", () => setTimeout(fitChat, 50));
 chat.addEventListener("focusout", () => setTimeout(fitChat, 250));
 
+
+/* ============================================================ maps (tiles + route overlay) */
+// Mainland China maps (Gaode/AutoNavi) use the GCJ-02 datum, so GPS (WGS-84) points are shifted to line up.
+function inMainland(lat, lon){
+  if (lon < 73.5 || lon > 135.1 || lat < 18 || lat > 53.6) return false;
+  if (lat > 22.15 && lat < 22.5 && lon > 113.83 && lon < 114.44 && !(lat > 22.47 && lon < 113.96)) return false;   // Hong Kong
+  if (lat > 22.1 && lat < 22.22 && lon > 113.52 && lon < 113.6) return false;                                       // Macau
+  return lat > 20.5 || lon > 108;                                                                                   // rough Vietnam/Hainan split
+}
+function gcj(lat, lon){
+  const A = 6378245.0, EE = 0.00669342162296594323, x = lon - 105, y = lat - 35, PI = Math.PI;
+  let dLat = -100 + 2 * x + 3 * y + 0.2 * y * y + 0.1 * x * y + 0.2 * Math.sqrt(Math.abs(x));
+  dLat += (20 * Math.sin(6 * x * PI) + 20 * Math.sin(2 * x * PI)) * 2 / 3 + (20 * Math.sin(y * PI) + 40 * Math.sin(y / 3 * PI)) * 2 / 3 + (160 * Math.sin(y / 12 * PI) + 320 * Math.sin(y * PI / 30)) * 2 / 3;
+  let dLon = 300 + x + 2 * y + 0.1 * x * x + 0.1 * x * y + 0.1 * Math.sqrt(Math.abs(x));
+  dLon += (20 * Math.sin(6 * x * PI) + 20 * Math.sin(2 * x * PI)) * 2 / 3 + (20 * Math.sin(x * PI) + 40 * Math.sin(x / 3 * PI)) * 2 / 3 + (150 * Math.sin(x / 12 * PI) + 300 * Math.sin(x / 30 * PI)) * 2 / 3;
+  const rad = lat / 180 * PI; let mg = Math.sin(rad); mg = 1 - EE * mg * mg; const sm = Math.sqrt(mg);
+  return [lat + dLat * 180 / ((A * (1 - EE)) / (mg * sm) * PI), lon + dLon * 180 / (A / sm * Math.cos(rad) * PI)];
+}
+function merc(lat, lon, z){
+  const n = 256 * Math.pow(2, z), r = lat * Math.PI / 180;
+  return [(lon + 180) / 360 * n, (1 - Math.log(Math.tan(r) + 1 / Math.cos(r)) / Math.PI) / 2 * n];
+}
+function tileMap(rt, W, H){
+  const mid = rt[Math.floor(rt.length / 2)], china = inMainland(mid[0], mid[1]);
+  const ll = rt.map(p => china ? gcj(p[0], p[1]) : [p[0], p[1]]);
+  const pad = 26;
+  let z = 17;
+  for (; z > 2; z--) {
+    const pp = ll.map(p => merc(p[0], p[1], z));
+    const w = Math.max(...pp.map(p => p[0])) - Math.min(...pp.map(p => p[0])), h = Math.max(...pp.map(p => p[1])) - Math.min(...pp.map(p => p[1]));
+    if (w <= W - 2 * pad && h <= H - 2 * pad) break;
+  }
+  const pp = ll.map(p => merc(p[0], p[1], z));
+  const cx = (Math.max(...pp.map(p => p[0])) + Math.min(...pp.map(p => p[0]))) / 2, cy = (Math.max(...pp.map(p => p[1])) + Math.min(...pp.map(p => p[1]))) / 2;
+  const ox = cx - W / 2, oy = cy - H / 2;
+  // sharper tiles on high-density screens: one zoom level deeper, drawn at half size
+  const hi = (window.devicePixelRatio || 1) >= 1.5 && !china ? 0 : ((window.devicePixelRatio || 1) >= 1.5 ? 1 : 0);
+  const tz = z + hi, ts = 256 / Math.pow(2, hi), k = Math.pow(2, hi);
+  const x0 = Math.floor(ox * k / 256), x1 = Math.floor((ox + W) * k / 256), y0 = Math.floor(oy * k / 256), y1 = Math.floor((oy + H) * k / 256);
+  let tiles = "";
+  for (let ty = y0; ty <= y1; ty++) for (let tx = x0; tx <= x1; tx++) {
+    const url = china ? `https://webrd0${((tx + ty) % 4) + 1}.is.autonavi.com/appmaptile?lang=en&size=1&scale=1&style=7&x=${tx}&y=${ty}&z=${tz}`
+                      : `https://${"abcd"[(tx + ty) % 4]}.basemaps.cartocdn.com/dark_all/${tz}/${tx}/${ty}@2x.png`;
+    tiles += `<img class="mtile ${china ? "mtile-cn" : ""}" alt="" src="${url}" style="left:${(tx * ts - ox).toFixed(1)}px;top:${(ty * ts - oy).toFixed(1)}px;width:${ts}px;height:${ts}px">`;
+  }
+  return { pts: pp.map((p, i) => [p[0] - ox, p[1] - oy, rt[i][2]]), tiles, attr: china ? "© AutoNavi" : "© OpenStreetMap © CARTO" };
+}
+
 /* ============================================================ render */
 function renderTabs(){
   const nav = $("#tabs");
@@ -1890,7 +1935,46 @@ document.addEventListener("focusin", e => { if (!TV) return; const t = e.target.
 
 /* ============================================================ load */
 const bootAt = Date.now();
-function hideSplash(){ const sp = $("#splash"); if (!sp || sp.classList.contains("gone")) return; setTimeout(() => sp.classList.add("gone"), Math.max(0, 900 - (Date.now() - bootAt))); }
+const SP = { base: 0, scale: 1, raf: 0 };
+function spSet(scale){
+  const h = $("#spHole"); if (!h) return;
+  const d = SP.base * scale;
+  h.style.width = h.style.height = d + "px";
+  h.style.marginLeft = h.style.marginTop = (-d / 2) + "px";
+  h.style.borderWidth = Math.max(1, d * 0.052) + "px";
+}
+function spInit(){
+  SP.base = TV ? rem() * 9 : 92;
+  spSet(1);
+}
+spInit();
+const easeInOut = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+const easeIn = t => t * t * t * t;                                  // strong acceleration, like the reference
+function hideSplash(){
+  const sp = $("#splash"); if (!sp || sp.dataset.go) return;
+  sp.dataset.go = "1";
+  let reduce = false; try { reduce = matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (e) {}
+  const start = () => {
+    if (reduce) { sp.style.transition = "opacity .3s"; sp.style.opacity = 0; setTimeout(() => sp.classList.add("gone"), 320); return; }
+    const hole = $("#spHole"), diag = Math.hypot(innerWidth, innerHeight), end = diag * 7 / SP.base;
+    const T1 = 320, T2 = 520;                                       // anticipation, then zoom (ms)
+    let t0 = null;
+    const step = ts => {
+      if (t0 == null) t0 = ts;
+      const t = ts - t0;
+      if (t < T1) spSet(1 - 0.14 * easeInOut(t / T1));
+      else {
+        hole.classList.add("open");                                 // the ring's inside now shows the app
+        const k = Math.min(1, (t - T1) / T2);
+        spSet(0.86 + (end - 0.86) * easeIn(k));
+        if (k >= 1) { sp.classList.add("gone"); return; }
+      }
+      requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  };
+  setTimeout(start, Math.max(120, 700 - (Date.now() - bootAt)));    // let the first frame of the app paint
+}
 async function load(){
   try {
     const r = await fetch("data.json?t=" + Math.floor(Date.now() / 6e5), {cache: "no-store"});
