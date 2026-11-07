@@ -537,45 +537,46 @@ def http_json(url, body=None, headers=None, timeout=60):
         raise RuntimeError("HTTP %s %s" % (e.code, e.read().decode(errors="replace")[:300]))
 
 
-def pick_gemini_model(key):
-    """Use GEMINI_MODEL if set, else the newest 'flash' model that supports generateContent."""
+def gemini_candidates(key):
+    """GEMINI_MODEL if set, else stable 'flash' models newest first (the newest are often overloaded,
+    so the caller falls back down the list)."""
     if os.getenv("GEMINI_MODEL"):
-        return os.getenv("GEMINI_MODEL")
+        return [os.getenv("GEMINI_MODEL")]
+    import re as _re
     models = http_json("https://generativelanguage.googleapis.com/v1beta/models?pageSize=200",
-                       headers={"x-goog-api-key": key}).get("models", [])
-    names = [m["name"].split("/", 1)[1] for m in models
-             if "generateContent" in m.get("supportedGenerationMethods", [])]
-    def rank(n):
-        import re as _re
-        v = _re.search(r"gemini-(\d+(?:\.\d+)?)", n)
-        bad = any(x in n for x in ("lite", "preview", "exp", "image", "tts", "live", "audio", "embedding", "thinking"))
-        return (("flash" in n) and not bad, float(v.group(1)) if v else 0, "latest" not in n)
-    stable = sorted(names, key=rank, reverse=True)
-    return stable[0] if stable else "gemini-2.5-flash"
+                       headers={"x-goog-api-key": key}, timeout=30).get("models", [])
+    names = [m["name"].split("/", 1)[1] for m in models if "generateContent" in m.get("supportedGenerationMethods", [])]
+    bad = ("preview", "exp", "image", "tts", "live", "audio", "embedding", "transcribe", "omni", "robotics", "computer", "latest", "nano")
+    out = []
+    for n in names:
+        v = _re.fullmatch(r"gemini-(\d+(?:\.\d+)?)-flash(-lite)?", n)
+        if v and not any(x in n for x in bad):
+            out.append((0 if v.group(2) else 1, float(v.group(1)), n))
+    ranked = [n for _, _, n in sorted(out, reverse=True)]
+    return ranked[:5] or ["gemini-flash-latest"]
 
 
 def ask_gemini(prompt):
     key = os.getenv("GEMINI_API_KEY")
     if not key:
         return None
-    model = pick_gemini_model(key)
-    print("  Gemini model: %s" % model)
-    url = "https://generativelanguage.googleapis.com/v1beta/models/%s:generateContent" % model
-    base = {"responseMimeType": "application/json", "temperature": 0.6, "maxOutputTokens": 4096}
-    # Short briefing: keep "thinking" low so it answers in seconds. Older models use a token budget instead.
-    for extra in ({"thinkingConfig": {"thinkingLevel": "low"}}, {"thinkingConfig": {"thinkingBudget": 512}}, {}):
+    body = {"contents": [{"role": "user", "parts": [{"text": prompt}]}],
+            "generationConfig": {"responseMimeType": "application/json", "temperature": 0.6, "maxOutputTokens": 4096}}
+    for model in gemini_candidates(key):
+        t0 = time.time()
         try:
-            r = http_json(url, {"contents": [{"role": "user", "parts": [{"text": prompt}]}], "generationConfig": dict(base, **extra)},
-                          headers={"x-goog-api-key": key}, timeout=180)
-            break
-        except RuntimeError as e:
-            if "HTTP 400" not in str(e):
-                raise
-            print("  (Gemini rejected %s, retrying)" % (list(extra.get("thinkingConfig", {})) or "plain request"))
-    else:
-        return None
-    parts = g(r, "candidates", 0, "content", "parts", default=[]) or []
-    return "".join(p.get("text", "") for p in parts if not p.get("thought"))
+            r = http_json("https://generativelanguage.googleapis.com/v1beta/models/%s:generateContent" % model,
+                          body, headers={"x-goog-api-key": key}, timeout=90)
+        except Exception as e:  # noqa: BLE001 - 503 overloaded, 429 quota, timeouts: try the next model
+            print("  Gemini %s unavailable after %.0fs (%s), trying next" % (model, time.time() - t0, str(e)[:80]))
+            continue
+        parts = g(r, "candidates", 0, "content", "parts", default=[]) or []
+        text = "".join(p.get("text", "") for p in parts if not p.get("thought"))
+        if text.strip():
+            print("  Gemini model used: %s (%.0fs)" % (model, time.time() - t0))
+            return text
+        print("  Gemini %s returned no text (%s), trying next" % (model, g(r, "candidates", 0, "finishReason")))
+    return None
 
 
 def ask_claude(prompt):
