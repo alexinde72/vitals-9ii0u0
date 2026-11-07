@@ -45,6 +45,7 @@ jobs:
         env:
           GARMIN_PERSONAL_API_KEY: ${{ secrets.GARMIN_PERSONAL_API_KEY }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           PREVIOUS_DATA_URL: ${{ steps.pages.outputs.base_url }}/data.json
           BACKFILL: ${{ inputs.backfill }}
         run: |

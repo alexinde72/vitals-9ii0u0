@@ -9,7 +9,7 @@ Usage:
 Env:
   GARMIN_PERSONAL_API_KEY  Personal API key (else ~/.config/garmin/connect-personal-api-key)
   PREVIOUS_DATA_URL   URL of the currently deployed data.json to merge with
-  ANTHROPIC_API_KEY   optional: write an AI daily summary
+  GEMINI_API_KEY / ANTHROPIC_API_KEY   optional: write an AI daily briefing (Gemini preferred)
 """
 import argparse
 import datetime as dt
@@ -19,6 +19,7 @@ import os
 import random
 import sys
 import time
+import urllib.error
 import urllib.request
 from pathlib import Path
 
@@ -473,8 +474,7 @@ Return ONLY JSON: {"headline": "<max 8 words>", "body": "<2-3 sentences>", "tips
 
 
 def ai_insights(days, activities):
-    key = os.getenv("ANTHROPIC_API_KEY")
-    if not key:
+    if not (os.getenv("GEMINI_API_KEY") or os.getenv("ANTHROPIC_API_KEY")):
         return None
 
     def avg(rows, f):
@@ -506,25 +506,77 @@ def ai_insights(days, activities):
             {k: a.get(k) for k in ("start", "type", "duration", "distance", "avgHr", "load", "teAer")} for a in activities[:10]
         ],
     }
-    body = json.dumps({
-        "model": os.getenv("CLAUDE_MODEL", "claude-sonnet-5-5"),
-        "max_tokens": 600,
-        "messages": [{"role": "user", "content": AI_PROMPT + "\n\n" + json.dumps(payload)}],
-    }).encode()
-    req = urllib.request.Request(
-        "https://api.anthropic.com/v1/messages", data=body,
-        headers={"x-api-key": key, "anthropic-version": "2023-06-01", "content-type": "application/json"},
-    )
-    try:
-        with urllib.request.urlopen(req, timeout=60) as r:
-            text = json.load(r)["content"][0]["text"]
-        text = text[text.find("{"): text.rfind("}") + 1]
-        out = json.loads(text)
-        out["generated"] = dt.datetime.now().isoformat(timespec="minutes")
+    prompt = AI_PROMPT + "\n\n" + json.dumps(payload)
+    for name, fn in (("Gemini", ask_gemini), ("Claude", ask_claude)):
+        try:
+            text = fn(prompt)
+        except Exception as e:  # noqa: BLE001
+            print("  ! %s briefing failed: %s" % (name, str(e)[:300]), file=sys.stderr)
+            continue
+        if not text:
+            continue
+        try:
+            out = json.loads(text[text.find("{"): text.rfind("}") + 1])
+        except ValueError:
+            print("  ! %s returned non-JSON: %s" % (name, text[:200]), file=sys.stderr)
+            continue
+        out["generated"] = dt.datetime.now().astimezone().isoformat(timespec="minutes")
+        out["model"] = name
+        print("  AI briefing written by %s: %s" % (name, out.get("headline")))
         return out
-    except Exception as e:  # noqa: BLE001
-        print("  ! AI insights failed: %s" % e, file=sys.stderr)
+    return None
+
+
+def http_json(url, body=None, headers=None, timeout=60):
+    req = urllib.request.Request(url, data=json.dumps(body).encode() if body is not None else None,
+                                 headers={"content-type": "application/json", **(headers or {})})
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as r:
+            return json.load(r)
+    except urllib.error.HTTPError as e:
+        raise RuntimeError("HTTP %s %s" % (e.code, e.read().decode(errors="replace")[:300]))
+
+
+def pick_gemini_model(key):
+    """Use GEMINI_MODEL if set, else the newest 'flash' model that supports generateContent."""
+    if os.getenv("GEMINI_MODEL"):
+        return os.getenv("GEMINI_MODEL")
+    models = http_json("https://generativelanguage.googleapis.com/v1beta/models?pageSize=200",
+                       headers={"x-goog-api-key": key}).get("models", [])
+    names = [m["name"].split("/", 1)[1] for m in models
+             if "generateContent" in m.get("supportedGenerationMethods", [])]
+    def rank(n):
+        import re as _re
+        v = _re.search(r"gemini-(\d+(?:\.\d+)?)", n)
+        bad = any(x in n for x in ("lite", "preview", "exp", "image", "tts", "live", "audio", "embedding", "thinking"))
+        return (("flash" in n) and not bad, float(v.group(1)) if v else 0, "latest" not in n)
+    stable = sorted(names, key=rank, reverse=True)
+    return stable[0] if stable else "gemini-2.5-flash"
+
+
+def ask_gemini(prompt):
+    key = os.getenv("GEMINI_API_KEY")
+    if not key:
         return None
+    model = pick_gemini_model(key)
+    print("  Gemini model: %s" % model)
+    r = http_json("https://generativelanguage.googleapis.com/v1beta/models/%s:generateContent" % model,
+                  {"contents": [{"role": "user", "parts": [{"text": prompt}]}],
+                   "generationConfig": {"responseMimeType": "application/json", "temperature": 0.6, "maxOutputTokens": 2048}},
+                  headers={"x-goog-api-key": key})
+    parts = g(r, "candidates", 0, "content", "parts", default=[]) or []
+    return "".join(p.get("text", "") for p in parts if not p.get("thought"))
+
+
+def ask_claude(prompt):
+    key = os.getenv("ANTHROPIC_API_KEY")
+    if not key:
+        return None
+    r = http_json("https://api.anthropic.com/v1/messages",
+                  {"model": os.getenv("CLAUDE_MODEL", "claude-sonnet-5-5"), "max_tokens": 600,
+                   "messages": [{"role": "user", "content": prompt}]},
+                  headers={"x-api-key": key, "anthropic-version": "2023-06-01"})
+    return g(r, "content", 0, "text")
 
 
 # ---------------------------------------------------------------- main
