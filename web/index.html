@@ -290,7 +290,7 @@ body.tv .rail-extra .clock{font-size:3rem;font-weight:700}
 body.tv .stack>.card+.card{margin-top:1.1rem}
 @media (min-width:760px){.va-wide .va-body{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);grid-gap:28px;align-items:center}}
 body.tv .va-wide .va-body{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);grid-gap:2.4rem;align-items:center}
-body.tv .va-wide .va-orb{max-width:27rem}
+body.tv .va-wide .va-orb{max-width:31rem}
 body.tv .va-orb{max-width:22rem}
 
 /* ---------- AI insight cards ---------- */
@@ -750,7 +750,7 @@ function heatmap(el, fn, color, fmt){
   const s = TV ? rem()/16 : 1, avail = el.clientWidth;
   const first = pd(days[0].date), offset = first.getDay();
   const weeks = Math.ceil((days.length + offset) / 7);
-  const cell = Math.max(5, Math.min(16*s, Math.floor((avail - 30*s) / weeks) - 2)), gap = Math.max(1.5, cell * 0.18);
+  const cell = Math.max(5, Math.min((TV ? 30 : 16)*s, Math.floor((avail - 30*s) / weeks) - 2)), gap = Math.max(1.5, cell * 0.18);
   const w = 30*s + weeks * (cell + gap), h = 18*s + 7 * (cell + gap);
   const vals = days.map(fn).filter(v => v != null);
   const lo = Math.min(...vals), hi = Math.max(...vals);
@@ -1157,7 +1157,7 @@ V.trends = () => {
       steps:[M.steps, C.steps, v=>fNum(v), v=>v>=1000?(v/1000)+"k":v], vo2:[M.vo2, C.vo2, v=>v.toFixed(1), v=>v], ready:[M.ready, C.good, v=>v.toFixed(0)+"%", v=>v+"%"]}[mk];
     const months = []; yr.forEach(d => { const dt = pd(d.date), key = dt.getFullYear()*12 + dt.getMonth(); let m = months[months.length-1]; if (!m || m.key !== key) months.push(m = {key, d:new Date(dt.getFullYear(), dt.getMonth(), 1), items:[]}); m.items.push(d); });
     const ys = months.map(m => mean(m.items.map(def[0])));
-    lineChart($("#c-month"), { xs: months.map(m=>m.d), h: TV ? 300 : 200, series:[{ys, color:def[1], w:2.4, dots:true, opacity:1, r:3.2}], yFmt: def[3], endLabel:{series:0},
+    lineChart($("#c-month"), { xs: months.map(m=>m.d), h: TV ? 370 : 200, series:[{ys, color:def[1], w:2.4, dots:true, opacity:1, r:3.2}], yFmt: def[3], endLabel:{series:0},
       tip: i => `<b>${MON[months[i].d.getMonth()]} ${months[i].d.getFullYear()}</b>${tipRow(def[1],"Average",ys[i]==null?"–":def[2](ys[i]))}` });
     heatmap($("#c-heat"), ho[1], ho[2], ho[3]);
   };
