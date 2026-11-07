@@ -553,7 +553,9 @@ def gemini_candidates(key):
         if v and not any(x in n for x in bad):
             out.append((0 if v.group(2) else 1, float(v.group(1)), n))
     ranked = [n for _, _, n in sorted(out, reverse=True)]
-    return ranked[:5] or ["gemini-flash-latest"]
+    full = [n for n in ranked if not n.endswith("-lite")][:4]
+    lite = [n for n in ranked if n.endswith("-lite")][:2]
+    return (full + lite) or ["gemini-flash-latest"]
 
 
 def ask_gemini(prompt):
@@ -562,13 +564,21 @@ def ask_gemini(prompt):
         return None
     body = {"contents": [{"role": "user", "parts": [{"text": prompt}]}],
             "generationConfig": {"responseMimeType": "application/json", "temperature": 0.6, "maxOutputTokens": 4096}}
-    for model in gemini_candidates(key):
+    models = gemini_candidates(key)
+    for attempt in range(2):
+      if attempt:
+          print("  All Gemini models busy, waiting 45s and retrying")
+          time.sleep(45)
+      for model in models:
         t0 = time.time()
         try:
             r = http_json("https://generativelanguage.googleapis.com/v1beta/models/%s:generateContent" % model,
-                          body, headers={"x-goog-api-key": key}, timeout=90)
+                          body, headers={"x-goog-api-key": key}, timeout=60)
         except Exception as e:  # noqa: BLE001 - 503 overloaded, 429 quota, timeouts: try the next model
-            print("  Gemini %s unavailable after %.0fs (%s), trying next" % (model, time.time() - t0, str(e)[:80]))
+            msg = " ".join(str(e).split())
+            print("  Gemini %s unavailable after %.0fs (%s), trying next" % (model, time.time() - t0, msg[:140]))
+            if "HTTP 404" in msg:
+                models = [m for m in models if m != model]
             continue
         parts = g(r, "candidates", 0, "content", "parts", default=[]) or []
         text = "".join(p.get("text", "") for p in parts if not p.get("thought"))
